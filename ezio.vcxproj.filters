@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ezio">
+      <UniqueIdentifier>{1f226477-5119-4ca0-aba3-6c58ef161e9c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ezio\winsock_context.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ezio\winsock_context.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

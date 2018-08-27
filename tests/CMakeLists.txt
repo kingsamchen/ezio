@@ -1,6 +1,7 @@
 
 set(test_SRCS
     main.cpp
+    ignore_sigpipe_unittest.cpp
 )
 
 add_executable(ezio_test ${test_SRCS})

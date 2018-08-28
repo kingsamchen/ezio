@@ -1,6 +1,7 @@
 
 set(ezio_SRCS
     ignore_sigpipe.cpp
+    io_service_context.cpp
 )
 
 add_library(ezio ${ezio_SRCS})

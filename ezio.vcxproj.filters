@@ -12,6 +12,9 @@
     <ClInclude Include="ezio\io_service_context.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\scoped_socket.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">

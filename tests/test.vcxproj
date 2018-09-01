@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="endian_utils_unittest.cpp" />
     <ClCompile Include="io_service_context_unittest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="scoped_socket_unittest.cpp" />

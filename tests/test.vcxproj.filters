@@ -11,6 +11,9 @@
     <ClCompile Include="scoped_socket_unittest.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="endian_utils_unittest.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

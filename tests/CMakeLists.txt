@@ -1,6 +1,7 @@
 
 set(test_SRCS
     main.cpp
+    endian_utils_unittest.cpp
     ignore_sigpipe_unittest.cpp
     io_service_context_unittest.cpp
     scoped_socket_unittest.cpp

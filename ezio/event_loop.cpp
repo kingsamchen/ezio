@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "kbase/error_exception_util.h"
+#include "kbase/scope_guard.h"
 
 #include "ezio/notifier.h"
 
@@ -23,7 +24,8 @@ thread_local EventLoop* tls_loop_in_thread {nullptr};
 EventLoop::EventLoop()
     : is_running_(false),
       owner_thread_id_(this_thread::GetThreadID()),
-      event_pump_(this)
+      event_pump_(this),
+      executing_pending_task_(false)
 {
     ENSURE(CHECK, tls_loop_in_thread == nullptr).Require();
     tls_loop_in_thread = this;
@@ -49,6 +51,8 @@ void EventLoop::Run()
             item.first->HandleEvent(pumped_time, item.second);
         }
 
+        ProcessPendingTasks();
+
         active_notifications.clear();
     }
 }
@@ -68,6 +72,27 @@ EventLoop* EventLoop::current() noexcept
     return tls_loop_in_thread;
 }
 
+void EventLoop::RunTask(Task task)
+{
+    if (BelongsToCurrentThread()) {
+        task();
+    } else {
+        QueueTask(std::move(task));
+    }
+}
+
+void EventLoop::QueueTask(Task task)
+{
+    {
+        std::lock_guard<std::mutex> lock(task_queue_mutex_);
+        task_queue_.push_back(std::move(task));
+    }
+
+    if (!BelongsToCurrentThread() || executing_pending_task_) {
+        event_pump_.Wakeup();
+    }
+}
+
 void EventLoop::RegisterNotifier(Notifier* notifier)
 {
     event_pump_.RegisterNotifier(notifier);
@@ -76,6 +101,23 @@ void EventLoop::RegisterNotifier(Notifier* notifier)
 void EventLoop::UnregisterNotifier(Notifier* notifier)
 {
     event_pump_.UnregisterNotifier(notifier);
+}
+
+void EventLoop::ProcessPendingTasks()
+{
+    executing_pending_task_ = true;
+    ON_SCOPE_EXIT { executing_pending_task_ = false; };
+
+    decltype(task_queue_) pending_tasks;
+
+    {
+        std::lock_guard<std::mutex> lock(task_queue_mutex_);
+        pending_tasks.swap(task_queue_);
+    }
+
+    for (auto& task : pending_tasks) {
+        task();
+    }
 }
 
 }   // namespace ezio

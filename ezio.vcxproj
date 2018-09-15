@@ -168,12 +168,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ezio\endian_utils.h" />
+    <ClInclude Include="ezio\event_loop.h" />
+    <ClInclude Include="ezio\event_pump.h" />
+    <ClInclude Include="ezio\event_pump_impl_win.h" />
+    <ClInclude Include="ezio\io_context.h" />
     <ClInclude Include="ezio\io_service_context.h" />
+    <ClInclude Include="ezio\notifier.h" />
     <ClInclude Include="ezio\scoped_socket.h" />
+    <ClInclude Include="ezio\this_thread.h" />
+    <ClInclude Include="ezio\time_point.h" />
     <ClInclude Include="ezio\winsock_context.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ezio\event_loop.cpp" />
+    <ClCompile Include="ezio\event_pump.cpp" />
+    <ClCompile Include="ezio\event_pump_impl_win.cpp" />
     <ClCompile Include="ezio\io_service_context.cpp" />
+    <ClCompile Include="ezio\notifier.cpp" />
+    <ClCompile Include="ezio\notifier_win.cpp" />
     <ClCompile Include="ezio\winsock_context.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

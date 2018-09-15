@@ -2,10 +2,6 @@
  @ 0xCCCCCCCC
 */
 
-#if defined(_MSC_VER)
-#pragma once
-#endif
-
 #ifndef EZIO_ENDIAN_UTILS_H_
 #define EZIO_ENDIAN_UTILS_H_
 

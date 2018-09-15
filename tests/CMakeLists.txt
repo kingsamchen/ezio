@@ -4,6 +4,7 @@ set(test_SRCS
     endian_utils_unittest.cpp
     ignore_sigpipe_unittest.cpp
     io_service_context_unittest.cpp
+    loop_and_notifier_unittest.cpp
     scoped_socket_unittest.cpp
 )
 

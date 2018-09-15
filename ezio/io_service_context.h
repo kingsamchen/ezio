@@ -2,10 +2,6 @@
  @ 0xCCCCCCCC
 */
 
-#if defined(_MSC_VER)
-#pragma once
-#endif
-
 #ifndef EZIO_IO_SERVICE_CONTEXT_H_
 #define EZIO_IO_SERVICE_CONTEXT_H_
 

@@ -18,12 +18,48 @@
     <ClInclude Include="ezio\endian_utils.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\event_pump.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\event_pump_impl_win.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\event_loop.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\io_context.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\notifier.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\this_thread.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\time_point.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\io_service_context.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\event_pump.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\event_pump_impl_win.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\event_loop.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\notifier.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\notifier_win.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,6 +11,7 @@
 
 #include "kbase/at_exit_manager.h"
 
+#include "ezio/chrono_utils.h"
 #include "ezio/io_service_context.h"
 
 namespace ezio {
@@ -64,6 +65,92 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
         loop.Run();
 
         th.join();
+    }
+
+    SECTION("runs a timed task")
+    {
+        EventLoop loop;
+
+        loop.RunTaskAfter([] {
+            printf("The timed task is executing\n");
+            EventLoop::current()->Quit();
+        }, std::chrono::seconds(3));
+
+        printf("EventLoop is running!\n");
+
+        loop.Run();
+    }
+
+    SECTION("timed tasks are ordered by their expiration")
+    {
+        EventLoop loop;
+
+        loop.RunTaskAfter([] {
+            printf("Task with 5s delayed\n");
+            EventLoop::current()->RunTaskAfter([] {
+                printf("Wait for another 2s to quit\n");
+                EventLoop::current()->Quit();
+            }, std::chrono::seconds(2));
+        }, std::chrono::seconds(5));
+
+        std::thread th([&loop] {
+            loop.RunTaskAt([] {
+                printf("Task with 3s delayed\n");
+            }, ToTimePoint(std::chrono::system_clock::now()) + std::chrono::seconds(3));
+        });
+
+        printf("EventLoop is running!\n");
+
+        loop.Run();
+
+        th.join();
+    }
+
+    SECTION("cancel a timer")
+    {
+        EventLoop loop;
+
+        auto t1 = loop.RunTaskAfter([] {
+            printf("Task with 3s dealyed\n");
+        }, std::chrono::seconds(3));
+
+        loop.RunTaskAfter([] {
+            printf("quit\n");
+            EventLoop::current()->Quit();
+        }, std::chrono::seconds(5));
+
+        std::thread th([&loop, t1] {
+            printf("worker is zzzz\n");
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            loop.CancelTimedTask(t1);
+            printf("first timed task is canceled!\n");
+        });
+
+        printf("EventLoop is running!\n");
+
+        loop.Run();
+
+        th.join();
+    }
+
+    SECTION("cancel a repeating timer")
+    {
+        EventLoop loop;
+
+        int repeated_count = 0;
+        // Yuck. Don't use this hack in production code.
+        TimerID timer(nullptr);
+        timer = loop.RunTaskEvery([&repeated_count, &timer] {
+            printf("run for %d time\n", ++repeated_count);
+            if (repeated_count >= 5) {
+                EventLoop::current()->CancelTimedTask(timer);
+                EventLoop::current()->Quit();
+            }
+        }, std::chrono::seconds(1));
+
+        printf("EventLoop is running!\n");
+
+        loop.Run();
     }
 }
 

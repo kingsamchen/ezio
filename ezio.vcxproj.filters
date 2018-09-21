@@ -36,7 +36,16 @@
     <ClInclude Include="ezio\this_thread.h">
       <Filter>ezio</Filter>
     </ClInclude>
-    <ClInclude Include="ezio\time_point.h">
+    <ClInclude Include="ezio\timer.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\timer_queue.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\chrono_utils.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\timer_id.h">
       <Filter>ezio</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +69,12 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\notifier_win.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\timer.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\timer_queue.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

@@ -46,7 +46,7 @@ TimePoint EventPump::Impl::Pump(std::chrono::milliseconds timeout,
                                                static_cast<DWORD>(timeout.count()),
                                                FALSE);
 
-    TimePoint returned_time = std::chrono::system_clock::now();
+    TimePoint returned_time = ToTimePoint(std::chrono::system_clock::now());
 
     if (!succeed) {
         auto err = WSAGetLastError();

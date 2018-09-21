@@ -7,6 +7,8 @@ set(ezio_SRCS
     io_service_context.cpp
     notifier.cpp
     notifier_posix.cpp
+    timer.cpp
+    timer_queue.cpp
 )
 
 add_library(ezio ${ezio_SRCS})

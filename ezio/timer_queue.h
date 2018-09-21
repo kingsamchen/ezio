@@ -16,6 +16,12 @@
 #include "ezio/timer.h"
 #include "ezio/timer_id.h"
 
+#if defined(OS_POSIX)
+#include "kbase/scoped_handle.h"
+
+#include "ezio/notifier.h"
+#endif
+
 namespace ezio {
 
 class EventLoop;
@@ -24,7 +30,7 @@ class TimerQueue {
 public:
     explicit TimerQueue(EventLoop* loop);
 
-    ~TimerQueue() = default;
+    ~TimerQueue();
 
     DISALLOW_COPY(TimerQueue);
 
@@ -46,8 +52,18 @@ private:
 
     void CancelInLoop(TimerID timer_id);
 
+#if defined(OS_POSIX)
+    void OnTimerExpired(TimePoint timestamp);
+#endif
+
 private:
     EventLoop* loop_;
+
+#if defined(OS_POSIX)
+    kbase::ScopedFD timer_fd_;
+    Notifier timer_notifier_;
+#endif
+
     std::multimap<TimePoint, std::unique_ptr<Timer>> timers_;
     bool processing_expired_timers_;
     std::set<Timer*> canceling_timers_;

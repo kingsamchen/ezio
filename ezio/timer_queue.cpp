@@ -7,16 +7,95 @@
 #include <functional>
 
 #include "kbase/error_exception_util.h"
+#include "kbase/logging.h"
 #include "kbase/scope_guard.h"
 
 #include "ezio/event_loop.h"
+
+#if defined(OS_POSIX)
+#include <sys/timerfd.h>
+#endif
+
+namespace {
+
+#if defined(OS_POSIX)
+
+constexpr std::chrono::microseconds kMinDuration {100};
+
+int CreateTimerFD()
+{
+    int tfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    ENSURE(THROW, tfd != -1)(errno).Require();
+    return tfd;
+}
+
+timespec ConvertDurationToTimespec(std::chrono::microseconds duration)
+{
+    if (duration < kMinDuration) {
+        duration = kMinDuration;
+    }
+
+    auto sec_part = std::chrono::duration_cast<std::chrono::seconds>(duration);
+    auto nano_part = std::chrono::duration_cast<std::chrono::nanoseconds>(duration - sec_part);
+
+    timespec spec {};
+    spec.tv_sec = sec_part.count();
+    spec.tv_nsec = nano_part.count();
+
+    return spec;
+}
+
+void ResetTimerFD(int timer_fd, ezio::TimePoint when)
+{
+    auto duration = when - ezio::ToTimePoint(std::chrono::system_clock::now());
+
+    itimerspec new_spec {};
+    new_spec.it_value = ConvertDurationToTimespec(duration);
+
+    int rv = timerfd_settime(timer_fd, 0, &new_spec, nullptr);
+    if (rv < 0) {
+        auto err = errno;
+        LOG(ERROR) << "timerfd_settime() failed errno: " << err;
+        ENSURE(CHECK, kbase::NotReached())(err).Require();
+    }
+}
+
+void ConsumeTimerFD(int timer_fd)
+{
+    uint64_t data;
+    ssize_t n = read(timer_fd, &data, sizeof(data));
+    LOG_IF(INFO, n != sizeof(data)) << "Failed to read from timer-fd!";
+}
+
+#endif
+
+}   // namespace
 
 namespace ezio {
 
 TimerQueue::TimerQueue(EventLoop* loop)
     : loop_(loop),
+#if defined(OS_POSIX)
+      timer_fd_(CreateTimerFD()),
+      timer_notifier_(loop, timer_fd_),
+#endif
       processing_expired_timers_(false)
-{}
+{
+#if defined(OS_POSIX)
+    using namespace std::placeholders;
+
+    timer_notifier_.set_on_read(std::bind(&TimerQueue::OnTimerExpired, this, _1));
+    timer_notifier_.EnableReading();
+#endif
+}
+
+TimerQueue::~TimerQueue()
+{
+#if defined(OS_POSIX)
+    timer_notifier_.DisableAll();
+    timer_notifier_.Detach();
+#endif
+}
 
 TimerID TimerQueue::AddTimer(Timer::TickEventHandler handler, TimePoint when, TimeDuration interval)
 {
@@ -34,7 +113,11 @@ void TimerQueue::AddTimerInLoop(Timer* new_timer)
 
     auto new_earliest = Insert(std::unique_ptr<Timer>(new_timer));
     if (new_earliest) {
+#if defined(OS_POSIX)
+        ResetTimerFD(timer_fd_.get(), new_timer->expiration());
+#else
         loop_->Wakeup();
+#endif
     }
 }
 
@@ -121,5 +204,22 @@ std::pair<bool, TimePoint> TimerQueue::next_expiration() const
 
     return {true, timers_.begin()->first};
 }
+
+#if defined(OS_POSIX)
+
+void TimerQueue::OnTimerExpired(TimePoint timestamp)
+{
+    ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
+
+    ConsumeTimerFD(timer_fd_.get());
+
+    ProcessExpiredTimers(timestamp);
+
+    if (!timers_.empty()) {
+        ResetTimerFD(timer_fd_.get(), timers_.begin()->first);
+    }
+}
+
+#endif
 
 }   // namespace ezio

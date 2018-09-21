@@ -10,7 +10,7 @@
 namespace ezio {
 
 #if defined(OS_POSIX)
-// TODO: Complete definition for Linux
+using TimeDuration = std::chrono::microseconds;
 #else
 using TimeDuration = std::chrono::milliseconds;
 #endif

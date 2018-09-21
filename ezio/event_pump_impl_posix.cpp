@@ -54,7 +54,7 @@ TimePoint EventPump::Impl::Pump(std::chrono::milliseconds timeout,
                            static_cast<int>(timeout.count()));
     auto err = errno;
 
-    TimePoint returned_time = std::chrono::system_clock::now();
+    TimePoint returned_time = ToTimePoint(std::chrono::system_clock::now());
 
     if (count == -1) {
         if (err != EINTR) {

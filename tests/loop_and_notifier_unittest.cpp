@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "kbase/at_exit_manager.h"
+#include "kbase/logging.h"
 
 #include "ezio/chrono_utils.h"
 #include "ezio/io_service_context.h"
@@ -86,8 +87,10 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
         EventLoop loop;
 
         loop.RunTaskAfter([] {
+            LOG(INFO) << "Task with 5s delayed";
             printf("Task with 5s delayed\n");
             EventLoop::current()->RunTaskAfter([] {
+                LOG(INFO) << "Wait for another 2s to quit";
                 printf("Wait for another 2s to quit\n");
                 EventLoop::current()->Quit();
             }, std::chrono::seconds(2));
@@ -95,6 +98,7 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
 
         std::thread th([&loop] {
             loop.RunTaskAt([] {
+                LOG(INFO) << "Task with 3s delayed";
                 printf("Task with 3s delayed\n");
             }, ToTimePoint(std::chrono::system_clock::now()) + std::chrono::seconds(3));
         });

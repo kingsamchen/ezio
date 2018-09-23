@@ -175,6 +175,7 @@
     <ClInclude Include="ezio\io_service_context.h" />
     <ClInclude Include="ezio\notifier.h" />
     <ClInclude Include="ezio\scoped_socket.h" />
+    <ClInclude Include="ezio\socket_address.h" />
     <ClInclude Include="ezio\this_thread.h" />
     <ClInclude Include="ezio\timer.h" />
     <ClInclude Include="ezio\timer_id.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="ezio\io_service_context.cpp" />
     <ClCompile Include="ezio\notifier.cpp" />
     <ClCompile Include="ezio\notifier_win.cpp" />
+    <ClCompile Include="ezio\socket_address.cpp" />
     <ClCompile Include="ezio\timer.cpp" />
     <ClCompile Include="ezio\timer_queue.cpp" />
     <ClCompile Include="ezio\winsock_context.cpp" />

@@ -48,6 +48,9 @@
     <ClInclude Include="ezio\timer_id.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\socket_address.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
@@ -75,6 +78,9 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\timer_queue.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\socket_address.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

@@ -159,6 +159,7 @@
     <ClCompile Include="loop_and_notifier_unittest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="scoped_socket_unittest.cpp" />
+    <ClCompile Include="socket_address_unittest.cpp" />
     <ClCompile Include="winsock_context_unittest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

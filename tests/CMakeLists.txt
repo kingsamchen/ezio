@@ -6,6 +6,7 @@ set(test_SRCS
     io_service_context_unittest.cpp
     loop_and_notifier_unittest.cpp
     scoped_socket_unittest.cpp
+    socket_address_unittest.cpp
 )
 
 add_executable(ezio_test ${test_SRCS})

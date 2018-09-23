@@ -17,6 +17,9 @@
     <ClCompile Include="loop_and_notifier_unittest.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="socket_address_unittest.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

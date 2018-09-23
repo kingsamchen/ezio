@@ -7,6 +7,7 @@ set(ezio_SRCS
     io_service_context.cpp
     notifier.cpp
     notifier_posix.cpp
+    socket_address.cpp
     timer.cpp
     timer_queue.cpp
 )

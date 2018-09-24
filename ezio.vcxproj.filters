@@ -51,6 +51,12 @@
     <ClInclude Include="ezio\socket_address.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\acceptor.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\socket_utils.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
@@ -81,6 +87,18 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\socket_address.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\acceptor.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\socket_utils.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\socket_utils_win.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\acceptor_win.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

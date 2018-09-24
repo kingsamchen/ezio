@@ -10,22 +10,11 @@
 #include "kbase/error_exception_util.h"
 #include "kbase/string_format.h"
 
+#include "ezio/socket_utils.h"
+
 #if defined(OS_WIN)
 #include <WS2tcpip.h>
 #endif
-
-namespace {
-
-int GetErrno() noexcept
-{
-#if defined(OS_POSIX)
-    return errno;
-#else
-    return WSAGetLastError();
-#endif
-}
-
-}   // namespace
 
 namespace ezio {
 
@@ -51,14 +40,14 @@ SocketAddress::SocketAddress(NOT_NULL const char* ip, unsigned short port)
     addr_.sin_family = AF_INET;
     addr_.sin_port = HostToNetwork(port);
     int rv = inet_pton(AF_INET, ip, &addr_.sin_addr);
-    ENSURE(THROW, rv > 0)(GetErrno())(ip)(port).Require();
+    ENSURE(THROW, rv > 0)(socket::GetLastErrorCode())(ip)(port).Require();
 }
 
 std::string SocketAddress::ToHostPort() const
 {
     std::array<char, 16> ip {};
     auto ip_ptr = inet_ntop(AF_INET, &addr_.sin_addr, ip.data(), ip.size());
-    ENSURE(CHECK, ip_ptr != nullptr)(GetErrno()).Require();
+    ENSURE(CHECK, ip_ptr != nullptr)(socket::GetLastErrorCode()).Require();
 
     return kbase::StringPrintf("%s:%d", ip_ptr, NetworkToHost(addr_.sin_port));
 }

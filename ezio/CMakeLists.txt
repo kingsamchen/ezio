@@ -1,5 +1,7 @@
 
 set(ezio_SRCS
+    acceptor.cpp
+    acceptor_posix.cpp
     event_loop.cpp
     event_pump.cpp
     event_pump_impl_posix.cpp
@@ -8,6 +10,8 @@ set(ezio_SRCS
     notifier.cpp
     notifier_posix.cpp
     socket_address.cpp
+    socket_utils.cpp
+    socket_utils_posix.cpp
     timer.cpp
     timer_queue.cpp
 )

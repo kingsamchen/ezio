@@ -20,6 +20,9 @@
     <ClCompile Include="socket_address_unittest.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="acceptor_and_tcp_server_unittest.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

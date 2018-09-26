@@ -11,7 +11,7 @@
 
 #if defined(OS_POSIX)
 #include "ezio/event_pump_impl_posix.h"
-#else
+#elif defined(OS_WIN)
 #include "ezio/event_pump_impl_win.h"
 #endif
 

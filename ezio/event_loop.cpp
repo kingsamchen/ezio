@@ -142,7 +142,7 @@ std::chrono::milliseconds EventLoop::GetPumpTimeout() const
 {
 #if defined(OS_POSIX)
     return kPumpTimeout;
-#else
+#elif defined(OS_WIN)
     auto expiration = timer_queue_.next_expiration();
     if (!expiration.first) {
         return kPumpTimeout;

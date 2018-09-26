@@ -12,7 +12,7 @@
 
 #if defined(OS_POSIX)
 #include <sys/epoll.h>
-#else
+#elif defined(OS_WIN)
 #include <Windows.h>
 #endif
 
@@ -23,7 +23,7 @@ enum IOEvent : uint32_t {
 #if defined(OS_POSIX)
     Read = EPOLLIN | EPOLLPRI,
     Write = EPOLLOUT
-#else
+#elif defined(OS_WIN)
     Probe = 1 << 0,
     Read = 1 << 1,
     Write = 1 << 2
@@ -53,7 +53,7 @@ struct IOContext {
     }
 };
 
-#else
+#elif defined(OS_WIN)
 
 struct IORequest : OVERLAPPED {
     IOEventType events;

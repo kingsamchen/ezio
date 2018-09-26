@@ -7,10 +7,10 @@
 
 #include "kbase/basic_macros.h"
 
-#if defined(OS_WIN)
-#include "ezio/winsock_context.h"
-#else
+#if defined(OS_POSIX)
 #include "ezio/ignore_sigpipe.h"
+#elif defined(OS_WIN)
+#include "ezio/winsock_context.h"
 #endif
 
 namespace ezio {
@@ -43,7 +43,7 @@ private:
 private:
 #if defined(OS_WIN)
     WinsockContext winsock_context_;
-#else
+#elif defined(OS_POSIX)
     IgnoreSigPipe ignore_sigpipe_;
 #endif
 };

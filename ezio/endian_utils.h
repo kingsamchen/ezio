@@ -50,7 +50,7 @@ inline uint64_t HostToNetwork(uint64_t n) noexcept
     return htobe64(n);
 }
 
-#else
+#elif defined(OS_WIN)
 
 inline int16_t HostToNetwork(int16_t n) noexcept
 {
@@ -118,7 +118,7 @@ inline uint64_t NetworkToHost(uint64_t n) noexcept
     return be64toh(n);
 }
 
-#else
+#elif defined(OS_WIN)
 
 inline int16_t NetworkToHost(int16_t n) noexcept
 {

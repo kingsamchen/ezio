@@ -13,7 +13,7 @@
 
 #if defined(OS_POSIX)
 #include <arpa/inet.h>
-#else
+#elif defined(OS_WIN)
 #include <WinSock2.h>
 #endif
 

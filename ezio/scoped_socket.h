@@ -18,7 +18,7 @@ namespace ezio {
 
 using SocketTraits = kbase::FDTraits;
 
-#else
+#elif defined(OS_WIN)
 
 struct SocketTraits {
     using Handle = SOCKET;

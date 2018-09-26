@@ -115,7 +115,7 @@ void TimerQueue::AddTimerInLoop(Timer* new_timer)
     if (new_earliest) {
 #if defined(OS_POSIX)
         ResetTimerFD(timer_fd_.get(), new_timer->expiration());
-#else
+#elif defined(OS_WIN)
         loop_->Wakeup();
 #endif
     }

@@ -11,7 +11,7 @@ namespace ezio {
 
 #if defined(OS_POSIX)
 using TimeDuration = std::chrono::microseconds;
-#else
+#elif defined(OS_WIN)
 using TimeDuration = std::chrono::milliseconds;
 #endif
 

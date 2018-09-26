@@ -11,7 +11,7 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-#else
+#elif defined(OS_WIN)
 #include <Windows.h>
 #endif
 
@@ -20,7 +20,7 @@ namespace this_thread {
 
 #if defined(OS_POSIX)
 using ThreadID = pid_t;
-#else
+#elif defined(OS_WIN)
 using ThreadID = DWORD;
 #endif
 
@@ -28,7 +28,7 @@ inline ThreadID GetThreadID()
 {
 #if defined(OS_POSIX)
     return static_cast<ThreadID>(syscall(SYS_gettid));
-#else
+#elif defined(OS_WIN)
     return GetCurrentThreadId();
 #endif
 }

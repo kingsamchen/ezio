@@ -168,6 +168,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ezio\acceptor.h" />
+    <ClInclude Include="ezio\buffer.h" />
     <ClInclude Include="ezio\endian_utils.h" />
     <ClInclude Include="ezio\event_loop.h" />
     <ClInclude Include="ezio\event_pump.h" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClCompile Include="ezio\acceptor.cpp" />
     <ClCompile Include="ezio\acceptor_win.cpp" />
+    <ClCompile Include="ezio\buffer.cpp" />
     <ClCompile Include="ezio\event_loop.cpp" />
     <ClCompile Include="ezio\event_pump.cpp" />
     <ClCompile Include="ezio\event_pump_impl_win.cpp" />

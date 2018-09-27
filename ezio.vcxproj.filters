@@ -57,6 +57,9 @@
     <ClInclude Include="ezio\socket_utils.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\buffer.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
@@ -99,6 +102,9 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\acceptor_win.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\buffer.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

@@ -29,6 +29,8 @@ inline int GetLastErrorCode() noexcept
 #endif
 }
 
+int GetSocketErrorCode(const ScopedSocket& sock);
+
 // Create a non-blocking or an overlapped TCP socket.
 ScopedSocket CreateNonBlockingSocket();
 
@@ -42,6 +44,8 @@ void SetReuseAddr(const ScopedSocket& sock, bool enable);
 void BindOrThrow(const ScopedSocket& sock, const SocketAddress& listening_addr);
 
 void ListenOrThrow(const ScopedSocket& sock);
+
+void ShutdownWrite(const ScopedSocket& sock);
 
 }   // namespace socket
 }   // namespace ezio

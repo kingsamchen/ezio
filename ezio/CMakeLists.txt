@@ -14,6 +14,9 @@ set(ezio_SRCS
     socket_address.cpp
     socket_utils.cpp
     socket_utils_posix.cpp
+    tcp_server.cpp
+    tcp_connection.cpp
+    tcp_connection_posix.cpp
     timer.cpp
     timer_queue.cpp
 )

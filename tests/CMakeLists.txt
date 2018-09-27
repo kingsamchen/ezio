@@ -1,7 +1,7 @@
 
 set(test_SRCS
     main.cpp
-    acceptor_and_tcp_server_unittest.cpp
+    acceptor_unittest.cpp
     buffer_unittest.cpp
     endian_utils_unittest.cpp
     ignore_sigpipe_unittest.cpp
@@ -9,6 +9,7 @@ set(test_SRCS
     loop_and_notifier_unittest.cpp
     scoped_socket_unittest.cpp
     socket_address_unittest.cpp
+    tcp_server_and_connection.cpp
 )
 
 add_executable(ezio_test ${test_SRCS})

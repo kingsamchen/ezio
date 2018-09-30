@@ -6,7 +6,7 @@
 
 namespace ezio {
 
-void Notifier::HandleEvent(TimePoint receive_time, IOContext io_ctx) const
+void Notifier::DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const
 {
     auto events = io_ctx.event;
     constexpr auto details = io_ctx.ToDetails();

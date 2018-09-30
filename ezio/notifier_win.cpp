@@ -35,7 +35,7 @@ Result CheckIfOperationSucceed(SOCKET socket, OVERLAPPED* overlapped)
 
 namespace ezio {
 
-void Notifier::HandleEvent(TimePoint receive_time, IOContext io_ctx) const
+void Notifier::DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const
 {
     auto events = io_ctx.io_req->events;
     auto details = io_ctx.ToDetails();

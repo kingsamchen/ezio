@@ -6,6 +6,7 @@
 #define EZIO_NOTIFIER_H_
 
 #include <functional>
+#include <memory>
 
 #include "kbase/basic_macros.h"
 
@@ -90,6 +91,10 @@ public:
 
     void Detach();
 
+    // Prevent the associated object being destroyed during HandleEvent() or executing
+    // HandleEvent() after the object being dead.
+    void WeaklyBind(const std::shared_ptr<void>& obj);
+
     void HandleEvent(TimePoint receive_time, IOContext io_ctx) const;
 
     State state() const noexcept
@@ -110,9 +115,14 @@ public:
 private:
     void Update();
 
+    void DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const;
+
 private:
     EventLoop* loop_;
     ScopedSocket::Handle socket_;
+
+    std::weak_ptr<void> bound_object_;
+    bool weakly_bound_;
 
     ReadEventHandler on_read_;
     WriteEventHandler on_write_;

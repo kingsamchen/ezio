@@ -46,13 +46,16 @@ void Notifier::DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const
             LOG(WARNING) << "Async operation " << events << " on socket " << socket() << " failed;"
                          << " error: " << result.second;
             on_error_();
+            return;
         }
     }
 
     // An async-io operation can't be both read and write.
     if (events & IOEvent::Read) {
+        ENSURE(CHECK, WatchReading())(watching_events()).Require();
         on_read_(receive_time, details);
     } else if (events & IOEvent::Write) {
+        ENSURE(CHECK, WatchWriting())(watching_events()).Require();
         on_write_(details);
     } else {
         ENSURE(CHECK, kbase::NotReached())(events).Require();

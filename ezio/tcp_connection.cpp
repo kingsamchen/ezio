@@ -31,7 +31,7 @@ TCPConnection::TCPConnection(EventLoop* loop,
       local_addr_(local_addr),
       peer_addr_(peer_addr)
 {
-    conn_notifier_.set_on_read(std::bind(&TCPConnection::HandleRead, this, _1));
+    conn_notifier_.set_on_read(std::bind(&TCPConnection::HandleRead, this, _1, _2));
     conn_notifier_.set_on_write(std::bind(&TCPConnection::HandleWrite, this, _1));
     conn_notifier_.set_on_close(std::bind(&TCPConnection::HandleClose, this));
     conn_notifier_.set_on_error(std::bind(&TCPConnection::HandleError, this));
@@ -76,12 +76,15 @@ void TCPConnection::MakeEstablished()
 
     set_state(State::Connected);
 
-    // TODO: enable read-probe on Windows and post a probe request
-
     conn_notifier_.WeaklyBind(shared_from_this());
     conn_notifier_.EnableReading();
 
     on_connection_(shared_from_this());
+
+#if defined(OS_WIN)
+    ENSURE(CHECK, io_reqs_.read_req.IsProbing())(io_reqs_.read_req.events).Require();
+    PostRead();
+#endif
 }
 
 void TCPConnection::MakeTeardown()
@@ -109,6 +112,8 @@ void TCPConnection::Shutdown()
 
 void TCPConnection::DoShutdown()
 {
+    FORCE_AS_NON_CONST_FUNCTION();
+
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
 
     if (!conn_notifier_.WatchWriting()) {
@@ -132,7 +137,7 @@ void TCPConnection::HandleClose()
     on_close_(conn);
 }
 
-void TCPConnection::HandleError()
+void TCPConnection::HandleError() const
 {
     auto err_code = socket::GetSocketErrorCode(conn_sock_);
     LOG(ERROR) << "Error occurred on " << name() << " with code " << err_code;

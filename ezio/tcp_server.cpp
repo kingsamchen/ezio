@@ -76,7 +76,6 @@ void TCPServer::RemoveConnection(const TCPConnectionPtr& conn)
     auto removed_count = connections_.erase(conn->name());
     ENSURE(CHECK, removed_count == 1)(removed_count).Require();
 
-    // TODO: Do we really need to use QueueTask() ?
     loop_->QueueTask(std::bind(&TCPConnection::MakeTeardown, conn));
 }
 

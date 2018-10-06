@@ -11,7 +11,7 @@
 
 namespace ezio {
 
-void TCPConnection::HandleRead(TimePoint timestamp)
+void TCPConnection::HandleRead(TimePoint timestamp, IOContext::Details)
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
 
@@ -90,7 +90,7 @@ void TCPConnection::HandleWrite(IOContext::Details)
     if (output_buf_.readable_size() == 0) {
         conn_notifier_.DisableWriting();
         if (state() == State::Disconnecting) {
-            // TODO: DoShutdown();
+            DoShutdown();
         }
     }
 }

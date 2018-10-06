@@ -20,10 +20,13 @@
     <ClCompile Include="socket_address_unittest.cpp">
       <Filter>tests</Filter>
     </ClCompile>
-    <ClCompile Include="acceptor_and_tcp_server_unittest.cpp">
+    <ClCompile Include="buffer_unittest.cpp">
       <Filter>tests</Filter>
     </ClCompile>
-    <ClCompile Include="buffer_unittest.cpp">
+    <ClCompile Include="acceptor_unittest.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp_server_and_connection.cpp">
       <Filter>tests</Filter>
     </ClCompile>
   </ItemGroup>

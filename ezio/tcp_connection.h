@@ -18,6 +18,10 @@
 #include "ezio/scoped_socket.h"
 #include "ezio/socket_address.h"
 
+#if defined(OS_WIN)
+#include "ezio/io_context.h"
+#endif
+
 namespace ezio {
 
 class EventLoop;
@@ -108,13 +112,19 @@ private:
 
     void DoShutdown();
 
-    void HandleRead(TimePoint timestamp);
+    void HandleRead(TimePoint timestamp, IOContext::Details details);
 
     void HandleWrite(IOContext::Details details);
 
     void HandleClose();
 
-    void HandleError();
+    void HandleError() const;
+
+#if defined(OS_WIN)
+    void PostRead();
+
+    void PostWrite();
+#endif
 
 private:
     EventLoop* loop_;
@@ -129,6 +139,22 @@ private:
 
     Buffer input_buf_;
     Buffer output_buf_;
+
+#if defined(OS_WIN)
+    struct IORequests {
+        IORequest read_req;
+        IORequest write_req;
+        bool outstanding_write_req;
+
+        IORequests()
+            : read_req(IOEvent::Read | IOEvent::Probe),
+              write_req(IOEvent::Write),
+              outstanding_write_req(false)
+        {}
+    };
+
+    IORequests io_reqs_;
+#endif
 
     ConnectionEventHandler on_connection_;
     MessageEventHandler on_message_;

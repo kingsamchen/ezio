@@ -72,6 +72,16 @@ struct IORequest : OVERLAPPED {
         InternalHigh = 0;
         hEvent = nullptr;
     }
+
+    bool IsProbing() const noexcept
+    {
+        return (events & IOEvent::Probe) != 0;
+    }
+
+    void DisableProbing() noexcept
+    {
+        events &= ~IOEvent::Probe;
+    }
 };
 
 struct IOContext {

@@ -4,6 +4,8 @@
 
 #include "ezio/acceptor.h"
 
+#include <cstring>
+
 #include <fcntl.h>
 
 #include "kbase/error_exception_util.h"
@@ -21,7 +23,7 @@ int MakeSentinelFD()
 void Acceptor::HandleNewConnection()
 {
     while (true) {
-        sockaddr_in peer_raw_addr {0};
+        sockaddr_in peer_raw_addr {};
         socklen_t addr_len = sizeof(peer_raw_addr);
         int conn_fd = accept4(listening_sock_.get(), reinterpret_cast<sockaddr*>(&peer_raw_addr),
                               &addr_len, SOCK_NONBLOCK | SOCK_CLOEXEC);

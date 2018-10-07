@@ -8,7 +8,7 @@ namespace ezio {
 
 void Notifier::DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const
 {
-    auto events = io_ctx.event;
+    auto events = io_ctx.events;
     constexpr auto details = io_ctx.ToDetails();
 
     if ((events & EPOLLHUP) && !(events & EPOLLIN)) {

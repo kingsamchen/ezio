@@ -25,7 +25,7 @@ ssize_t ReadFDInVec(int fd, Buffer& buf)
         return -1;
     }
 
-    if (size_read <= buf.writable_size()) {
+    if (static_cast<size_t>(size_read) <= buf.writable_size()) {
         buf.EndWrite(static_cast<size_t>(size_read));
     } else {
         auto writable = buf.writable_size();

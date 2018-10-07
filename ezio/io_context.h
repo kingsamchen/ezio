@@ -35,7 +35,7 @@ using IOEventType = std::underlying_type_t<IOEvent>;
 #if defined(OS_POSIX)
 
 struct IOContext {
-    IOEventType event;
+    IOEventType events;
 
     // Details on Linux is currently no use.
     struct Details {
@@ -43,8 +43,8 @@ struct IOContext {
         ~Details() = default;
     };
 
-    explicit IOContext(IOEventType event) noexcept
-        : event(event)
+    explicit IOContext(IOEventType epoll_events) noexcept
+        : events(epoll_events)
     {}
 
     constexpr Details ToDetails() const noexcept

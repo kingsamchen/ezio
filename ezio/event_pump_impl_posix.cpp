@@ -62,7 +62,7 @@ TimePoint EventPump::Impl::Pump(std::chrono::milliseconds timeout,
         }
     } else if (count > 0) {
         FillActiveNotifications(static_cast<size_t>(count), notifications);
-        if (count == io_events_.size()) {
+        if (static_cast<size_t>(count) == io_events_.size()) {
             io_events_.resize(io_events_.size() * 2);
         }
     }

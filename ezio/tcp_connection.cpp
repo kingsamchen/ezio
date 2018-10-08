@@ -55,7 +55,7 @@ void TCPConnection::Send(kbase::StringView data)
     if (loop_->BelongsToCurrentThread()) {
         DoSend(data);
     } else {
-        loop_->QueueTask([replica = data.ToString(), self = shared_from_this()] {
+        loop_->QueueTask([replica = data.ToString(), self = shared_from_this()] () mutable {
             self->DoSend(std::move(replica));
         });
     }

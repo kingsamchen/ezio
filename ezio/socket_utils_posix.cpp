@@ -4,23 +4,13 @@
 
 #include "ezio/socket_utils.h"
 
+#include <netinet/tcp.h>
+
 #include "kbase/error_exception_util.h"
 #include "kbase/logging.h"
 
 namespace ezio {
 namespace socket {
-
-int GetSocketErrorCode(const ScopedSocket& sock)
-{
-    int optval;
-    socklen_t optlen = sizeof(optval);
-
-    if (getsockopt(sock.get(), SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
-        return errno;
-    }
-
-    return optval;
-}
 
 ScopedSocket CreateNonBlockingSocket()
 {
@@ -32,11 +22,20 @@ ScopedSocket CreateNonBlockingSocket()
 void SetReuseAddr(const ScopedSocket& sock, bool enable)
 {
     int optval = enable ? 1 : 0;
-    int rv = setsockopt(sock.get(), SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-    if (rv < 0) {
+    if (setsockopt(sock.get(), SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
         auto err = errno;
         LOG(ERROR) << "Set socket SO_REUSEADDR " << enable << " failed: " << err;
         ENSURE(CHECK, kbase::NotReached())(err)(enable).Require();
+    }
+}
+
+void EnableTCPQuickACK(const ScopedSocket& sock)
+{
+    int optval = 1;
+    if (setsockopt(sock.get(), IPPROTO_TCP, TCP_QUICKACK, &optval, sizeof(optval)) < 0) {
+        auto err = errno;
+        LOG(ERROR) << "Enable socket TCP_QUICKACK failed: " << err;
+        ENSURE(CHECK, kbase::NotReached())(err).Require();
     }
 }
 

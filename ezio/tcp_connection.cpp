@@ -121,6 +121,11 @@ void TCPConnection::DoShutdown()
     }
 }
 
+void TCPConnection::SetTCPNoDelay(bool enable)
+{
+    socket::SetTCPNoDelay(conn_sock_, enable);
+}
+
 void TCPConnection::HandleClose()
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();

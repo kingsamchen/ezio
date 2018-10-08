@@ -54,7 +54,7 @@ public:
     // This function is thread-safe.
     void Shutdown();
 
-    // TODO: SetTCPNoDelay();
+    void SetTCPNoDelay(bool enable);
 
     void MakeEstablished();
 

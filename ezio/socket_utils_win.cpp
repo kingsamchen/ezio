@@ -10,18 +10,6 @@
 namespace ezio {
 namespace socket {
 
-int GetSocketErrorCode(const ScopedSocket& sock)
-{
-    char optval = 0;
-    int optlen = sizeof(optval);
-
-    if (getsockopt(sock.get(), SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
-        return WSAGetLastError();
-    }
-
-    return optval;
-}
-
 ScopedSocket CreateNonBlockingSocket()
 {
     ScopedSocket sock(WSASocketW(AF_INET, SOCK_STREAM, 0, nullptr, 0, WSA_FLAG_OVERLAPPED));

@@ -19,6 +19,7 @@ TCPServer::TCPServer(ezio::EventLoop* loop, const SocketAddress& addr, std::stri
     : loop_(loop),
       listen_addr_(addr),
       name_(std::move(name)),
+      started_(false),
       acceptor_(loop, addr),
       next_conn_id_(0)
 {

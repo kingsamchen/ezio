@@ -163,6 +163,7 @@
     <ClCompile Include="scoped_socket_unittest.cpp" />
     <ClCompile Include="socket_address_unittest.cpp" />
     <ClCompile Include="tcp_server_and_connection.cpp" />
+    <ClCompile Include="thread_and_worker_pool.cpp" />
     <ClCompile Include="winsock_context_unittest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

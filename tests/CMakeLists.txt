@@ -10,6 +10,7 @@ set(test_SRCS
     scoped_socket_unittest.cpp
     socket_address_unittest.cpp
     tcp_server_and_connection.cpp
+    thread_and_worker_pool.cpp
 )
 
 add_executable(ezio_test ${test_SRCS})

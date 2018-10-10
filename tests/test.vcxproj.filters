@@ -29,6 +29,9 @@
     <ClCompile Include="tcp_server_and_connection.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="thread_and_worker_pool.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

@@ -10,6 +10,7 @@
 
 namespace ezio {
 
+// TODO: make thread name debugger friendly.
 Thread::Thread(std::string name)
     : name_(std::move(name)),
       raw_thread_(std::make_unique<std::thread>(std::bind(&Thread::ThreadMain, this)))

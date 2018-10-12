@@ -72,6 +72,9 @@
     <ClInclude Include="ezio\thread.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\worker_pool.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
@@ -129,6 +132,9 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\thread.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\worker_pool.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

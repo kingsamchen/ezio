@@ -189,6 +189,7 @@
     <ClInclude Include="ezio\timer_queue.h" />
     <ClInclude Include="ezio\chrono_utils.h" />
     <ClInclude Include="ezio\winsock_context.h" />
+    <ClInclude Include="ezio\worker_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\acceptor.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="ezio\timer.cpp" />
     <ClCompile Include="ezio\timer_queue.cpp" />
     <ClCompile Include="ezio\winsock_context.cpp" />
+    <ClCompile Include="ezio\worker_pool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

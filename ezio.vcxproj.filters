@@ -137,5 +137,8 @@
     <ClCompile Include="ezio\worker_pool.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
+    <ClCompile Include="ezio\this_thread.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

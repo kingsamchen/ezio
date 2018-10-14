@@ -17,9 +17,11 @@ set(ezio_SRCS
     tcp_server.cpp
     tcp_connection.cpp
     tcp_connection_posix.cpp
+    this_thread.cpp
     thread.cpp
     timer.cpp
     timer_queue.cpp
+    worker_pool.cpp
 )
 
 add_library(ezio ${ezio_SRCS})

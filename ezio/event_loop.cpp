@@ -24,7 +24,7 @@ thread_local EventLoop* tls_loop_in_thread {nullptr};
 
 EventLoop::EventLoop()
     : is_running_(false),
-      owner_thread_id_(this_thread::GetThreadID()),
+      owner_thread_id_(this_thread::GetID()),
       event_pump_(this),
       timer_queue_(this),
       executing_pending_task_(false)

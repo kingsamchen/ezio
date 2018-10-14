@@ -64,7 +64,7 @@ public:
     // This function is thread-safe.
     bool BelongsToCurrentThread() const noexcept
     {
-        return owner_thread_id_ == this_thread::GetThreadID();
+        return owner_thread_id_ == this_thread::GetID();
     }
 
     // It is allowed to register a notifier more than once in order to update its properties

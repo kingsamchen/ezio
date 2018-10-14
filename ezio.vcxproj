@@ -207,6 +207,7 @@
     <ClCompile Include="ezio\tcp_connection.cpp" />
     <ClCompile Include="ezio\tcp_connection_win.cpp" />
     <ClCompile Include="ezio\tcp_server.cpp" />
+    <ClCompile Include="ezio\this_thread.cpp" />
     <ClCompile Include="ezio\thread.cpp" />
     <ClCompile Include="ezio\timer.cpp" />
     <ClCompile Include="ezio\timer_queue.cpp" />

@@ -7,10 +7,10 @@
 #include "kbase/error_exception_util.h"
 
 #include "ezio/event_loop.h"
+#include "ezio/this_thread.h"
 
 namespace ezio {
 
-// TODO: make thread name debugger friendly.
 Thread::Thread(std::string name)
     : name_(std::move(name)),
       raw_thread_(std::make_unique<std::thread>(std::bind(&Thread::ThreadMain, this)))
@@ -41,6 +41,8 @@ void Thread::ThreadMain()
         loop_ = std::move(loop);
         loop_inited_.notify_one();
     }
+
+    this_thread::SetName(name_.c_str());
 
     loop_->Run();
 

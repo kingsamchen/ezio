@@ -21,7 +21,7 @@ WorkerPool::WorkerPool(EventLoop* main_loop, size_t worker_num, std::string name
     ENSURE(CHECK, worker_num > 0).Require();
 
     for (size_t i = 0; i < worker_num; ++i) {
-        auto worker_name = kbase::StringFormat("{0}-{1}", name, i);
+        auto worker_name = kbase::StringFormat("{0}-{1}", name_, i);
         auto worker = std::make_unique<Thread>(std::move(worker_name));
 
         loops_.push_back(worker->event_loop());

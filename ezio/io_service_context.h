@@ -38,7 +38,7 @@ public:
 #endif
 
 private:
-    IOServiceContext() = default;
+    IOServiceContext();
 
 private:
 #if defined(OS_WIN)

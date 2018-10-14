@@ -47,12 +47,12 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
         std::thread th([&loop] {
             // Queuing and running task both wake up the loop.
             std::this_thread::sleep_for(std::chrono::seconds(3));
-            printf("queue a task from thread %u\n", this_thread::GetThreadID());
+            printf("queue a task from thread %u\n", this_thread::GetID());
             loop.QueueTask([&loop] {
                 printf("queuing\n");
 
                 loop.RunTask([] {
-                    printf("execute task on thread %u\n...\n", this_thread::GetThreadID());
+                    printf("execute task on thread %u\n...\n", this_thread::GetID());
                 });
 
                 // Quit should be executed sequentially after previous lambda.
@@ -61,7 +61,7 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
             });
         });
 
-        printf("running loop on thread %u\n", this_thread::GetThreadID());
+        printf("running loop on thread %u\n", this_thread::GetID());
 
         loop.Run();
 

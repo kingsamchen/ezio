@@ -7,8 +7,12 @@
 #include "ezio/thread.h"
 
 #include <cstdio>
+#include <string>
+
+#include "kbase/at_exit_manager.h"
 
 #include "ezio/event_loop.h"
+#include "ezio/io_service_context.h"
 #include "ezio/this_thread.h"
 #include "ezio/worker_pool.h"
 
@@ -16,11 +20,11 @@ namespace ezio {
 
 TEST_CASE("Thread is native thread running EventLoop", "[Thread]")
 {
-    printf("Main thread %u\n", this_thread::GetThreadID());
+    printf("Main thread %u\n", this_thread::GetID());
 
     Thread th("Worker-101");
     th.event_loop()->RunTask([&th] {
-        printf("%s thread %u\n", th.name().c_str(), this_thread::GetThreadID());
+        printf("%s thread %u\n", th.name().c_str(), this_thread::GetID());
     });
 
     th.event_loop()->RunTaskAfter([] {
@@ -33,11 +37,11 @@ TEST_CASE("Thread is native thread running EventLoop", "[Thread]")
 
 TEST_CASE("EventLoop of a Thread quits from outside", "[Thread]")
 {
-    printf("Main thread %u\n", this_thread::GetThreadID());
+    printf("Main thread %u\n", this_thread::GetID());
 
     Thread th("Worker-101");
     th.event_loop()->RunTask([&th] {
-        printf("%s thread %u\n", th.name().c_str(), this_thread::GetThreadID());
+        printf("%s thread %u\n", th.name().c_str(), this_thread::GetID());
     });
 
     // Make sure worker thread runs before we call Quit().
@@ -54,6 +58,9 @@ TEST_CASE("EventLoop of a Thread quits from outside", "[Thread]")
 
 TEST_CASE("WorkerPool runs several worker threads", "[WorkerPool]")
 {
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
     // We don't even need to run the main-loop.
     EventLoop main;
 
@@ -61,9 +68,11 @@ TEST_CASE("WorkerPool runs several worker threads", "[WorkerPool]")
 
     for (int i = 0; i < 3; ++i) {
         pool.GetNextEventLoop()->RunTask([] {
-            printf("worker %u\n", this_thread::GetThreadID());
+            printf("%s %u\n", this_thread::GetName(), this_thread::GetID());
         });
     }
+
+    printf("%s %u\n", this_thread::GetName(), this_thread::GetID());
 }
 
 }   // namespace ezio

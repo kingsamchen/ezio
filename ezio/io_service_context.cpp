@@ -7,6 +7,8 @@
 #include "kbase/at_exit_manager.h"
 #include "kbase/error_exception_util.h"
 
+#include "ezio/this_thread.h"
+
 namespace {
 
 ezio::IOServiceContext* instance = nullptr;
@@ -14,6 +16,11 @@ ezio::IOServiceContext* instance = nullptr;
 }   // namespace
 
 namespace ezio {
+
+IOServiceContext::IOServiceContext()
+{
+    this_thread::SetName(kMainThreadName, true);
+}
 
 // static
 void IOServiceContext::Init()

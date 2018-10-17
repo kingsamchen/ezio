@@ -56,9 +56,16 @@ public:
 
     void SetTCPNoDelay(bool enable);
 
+    // Must be called on connection's loop thread.
     void MakeEstablished();
 
+    // Must be called on connection's loop thread.
     void MakeTeardown();
+
+    EventLoop* event_loop() const noexcept
+    {
+        return loop_;
+    }
 
     const std::string& name() const noexcept
     {

@@ -5,6 +5,7 @@
 #ifndef EZIO_EVENT_PUMP_IMPL_WIN_H_
 #define EZIO_EVENT_PUMP_IMPL_WIN_H_
 
+#include <set>
 #include <vector>
 
 #include <Windows.h>
@@ -32,9 +33,9 @@ public:
 
     void Wakeup();
 
-    void RegisterNotifier(Notifier* notifier) const;
+    void RegisterNotifier(Notifier* notifier);
 
-    void UnregisterNotifier(Notifier* notifier) const;
+    void UnregisterNotifier(Notifier* notifier);
 
 private:
     void AssociateWithNotifier(const Notifier* notifier) const;
@@ -44,6 +45,14 @@ private:
 private:
     kbase::ScopedWinHandle io_port_;
     std::vector<OVERLAPPED_ENTRY> io_events_;
+
+    // Although a socket is automatically removed from the completion port when it is
+    // closed, outstanding requests issued by the socket still get queued to the port and
+    // yet, any use of the dead notifier, which associated with the socket, would result
+    // in illegal access.
+    // Therefore, we need bookkeeping of notifiers in interest, skipping completion events
+    // of dead sockets.
+    std::set<Notifier*> managed_notifiers_;
 };
 
 }   // namespace ezio

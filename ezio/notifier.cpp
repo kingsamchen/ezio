@@ -72,6 +72,8 @@ void Notifier::HandleEvent(ezio::TimePoint receive_time, ezio::IOContext io_ctx)
     }
 
     DoHandleEvent(receive_time, io_ctx);
+
+    RETAIN_LIFETIME_TO_HERE(object);
 }
 
 void Notifier::Update()

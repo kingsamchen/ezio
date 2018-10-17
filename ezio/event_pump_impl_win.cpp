@@ -72,19 +72,23 @@ void EventPump::Impl::Wakeup()
     }
 }
 
-void EventPump::Impl::RegisterNotifier(Notifier* notifier) const
+void EventPump::Impl::RegisterNotifier(Notifier* notifier)
 {
     if (notifier->state() == Notifier::State::Unused) {
         AssociateWithNotifier(notifier);
         notifier->set_state(Notifier::State::Active);
+
+        ENSURE(CHECK, managed_notifiers_.count(notifier) == 0).Require();
+        managed_notifiers_.insert(notifier);
     }
 }
 
-void EventPump::Impl::UnregisterNotifier(Notifier* notifier) const
+void EventPump::Impl::UnregisterNotifier(Notifier* notifier)
 {
-    FORCE_AS_MEMBER_FUNCTION();
-
     notifier->set_state(Notifier::State::Inactive);
+
+    ENSURE(CHECK, managed_notifiers_.count(notifier) != 0).Require();
+    managed_notifiers_.erase(notifier);
 }
 
 void EventPump::Impl::AssociateWithNotifier(const Notifier* notifier) const
@@ -106,6 +110,12 @@ void EventPump::Impl::FillActiveNotifications(size_t count,
         }
 
         auto notifier = reinterpret_cast<Notifier*>(it->lpCompletionKey);
+
+        if (managed_notifiers_.count(notifier) == 0) {
+            LOG(WARNING) << "Skip dead notifier of a dead socket";
+            continue;
+        }
+
         auto io_req = static_cast<IORequest*>(it->lpOverlapped);
         IOContext io_ctx(io_req, it->dwNumberOfBytesTransferred);
 

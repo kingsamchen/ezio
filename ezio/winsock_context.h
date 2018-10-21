@@ -16,6 +16,7 @@ struct WinsockContext {
     ~WinsockContext();
 
     LPFN_ACCEPTEX AcceptEx;
+    LPFN_CONNECTEX ConnectEx;
 };
 
 }   // namespace ezio

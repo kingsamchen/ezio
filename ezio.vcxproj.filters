@@ -75,6 +75,15 @@
     <ClInclude Include="ezio\worker_pool.h">
       <Filter>ezio</Filter>
     </ClInclude>
+    <ClInclude Include="ezio\connector_win.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\connector_base.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
+    <ClInclude Include="ezio\connector.h">
+      <Filter>ezio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ezio\winsock_context.cpp">
@@ -138,6 +147,9 @@
       <Filter>ezio</Filter>
     </ClCompile>
     <ClCompile Include="ezio\this_thread.cpp">
+      <Filter>ezio</Filter>
+    </ClCompile>
+    <ClCompile Include="ezio\connector_win.cpp">
       <Filter>ezio</Filter>
     </ClCompile>
   </ItemGroup>

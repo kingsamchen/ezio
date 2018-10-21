@@ -40,6 +40,7 @@ WinsockContext::WinsockContext()
     ON_SCOPE_EXIT { closesocket(sock); };
 
     GetExtensionFunctionPointer(sock, AcceptEx, WSAID_ACCEPTEX);
+    GetExtensionFunctionPointer(sock, ConnectEx, WSAID_CONNECTEX);
 
     was_guard.Dismiss();
 }

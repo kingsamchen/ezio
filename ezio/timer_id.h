@@ -13,13 +13,22 @@ class Timer;
 
 class TimerID {
 public:
-    explicit TimerID(Timer* timer)
+    TimerID() noexcept
+        : timer_(nullptr)
+    {}
+
+    explicit TimerID(Timer* timer) noexcept
         : timer_(timer)
     {}
 
     DEFAULT_COPY(TimerID);
 
     DEFAULT_MOVE(TimerID);
+
+    explicit operator bool() const noexcept
+    {
+        return timer_ != nullptr;
+    }
 
     Timer* timer() const noexcept
     {

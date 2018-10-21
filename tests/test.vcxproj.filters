@@ -32,6 +32,9 @@
     <ClCompile Include="thread_and_worker_pool.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="connector_and_tcpclient.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

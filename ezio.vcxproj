@@ -170,6 +170,9 @@
     <ClInclude Include="ezio\acceptor.h" />
     <ClInclude Include="ezio\buffer.h" />
     <ClInclude Include="ezio\common_event_handlers.h" />
+    <ClInclude Include="ezio\connector.h" />
+    <ClInclude Include="ezio\connector_base.h" />
+    <ClInclude Include="ezio\connector_win.h" />
     <ClInclude Include="ezio\endian_utils.h" />
     <ClInclude Include="ezio\event_loop.h" />
     <ClInclude Include="ezio\event_pump.h" />
@@ -195,6 +198,7 @@
     <ClCompile Include="ezio\acceptor.cpp" />
     <ClCompile Include="ezio\acceptor_win.cpp" />
     <ClCompile Include="ezio\buffer.cpp" />
+    <ClCompile Include="ezio\connector_win.cpp" />
     <ClCompile Include="ezio\event_loop.cpp" />
     <ClCompile Include="ezio\event_pump.cpp" />
     <ClCompile Include="ezio\event_pump_impl_win.cpp" />

@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="acceptor_unittest.cpp" />
     <ClCompile Include="buffer_unittest.cpp" />
+    <ClCompile Include="connector_and_tcpclient.cpp" />
     <ClCompile Include="endian_utils_unittest.cpp" />
     <ClCompile Include="io_service_context_unittest.cpp" />
     <ClCompile Include="loop_and_notifier_unittest.cpp" />

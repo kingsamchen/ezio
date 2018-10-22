@@ -57,6 +57,8 @@ void SetTCPNoDelay(const ScopedSocket& sock, bool enable);
 
 void EnableTCPQuickACK(const ScopedSocket& sock);
 
+bool IsSelfConnected(const ScopedSocket& sock);
+
 #endif
 
 void BindOrThrow(const ScopedSocket& sock, const SocketAddress& listening_addr);

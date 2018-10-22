@@ -4,6 +4,8 @@
 
 #include "ezio/socket_utils.h"
 
+#include <cstring>
+
 #include <netinet/tcp.h>
 
 #include "kbase/error_exception_util.h"
@@ -37,6 +39,28 @@ void EnableTCPQuickACK(const ScopedSocket& sock)
         LOG(ERROR) << "Enable socket TCP_QUICKACK failed: " << err;
         ENSURE(CHECK, kbase::NotReached())(err).Require();
     }
+}
+
+bool IsSelfConnected(const ScopedSocket& sock)
+{
+    sockaddr_in local_addr, peer_addr;
+    memset(&local_addr, 0, sizeof(local_addr));
+    memset(&peer_addr, 0, sizeof(peer_addr));
+    socklen_t local_len = sizeof(local_addr);
+    socklen_t peer_len = sizeof(peer_addr);
+
+    if (getsockname(sock.get(), reinterpret_cast<sockaddr*>(&local_addr), &local_len) < 0) {
+        ENSURE(CHECK, kbase::NotReached()).Require();
+        LOG(ERROR) << "getsockname() failed due to " << errno;
+    }
+
+    if (getpeername(sock.get(), reinterpret_cast<sockaddr*>(&peer_addr), &peer_len) < 0) {
+        ENSURE(CHECK, kbase::NotReached()).Require();
+        LOG(ERROR) << "getpeername() failed due to " << errno;
+    }
+
+    return local_addr.sin_port == peer_addr.sin_port &&
+           memcpy(&local_addr.sin_addr, &peer_addr.sin_addr, sizeof(local_addr.sin_addr));
 }
 
 void ShutdownWrite(const ScopedSocket& sock)

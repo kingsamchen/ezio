@@ -24,7 +24,7 @@ TEST_CASE("Connecting to a remote host", "[Connector]")
 
     EventLoop main_loop;
 
-    SocketAddress remote_addr("192.168.126.134", 9876);
+    SocketAddress remote_addr("10.23.148.213", 9876);
 
     std::unique_ptr<Connector> connector(MakeConnector(&main_loop, remote_addr));
     connector->set_on_new_connection([&main_loop](ScopedSocket&& sock, const SocketAddress& addr) {
@@ -48,7 +48,7 @@ TEST_CASE("Cancel a connecting request", "[Connector")
     SocketAddress remote_addr("192.168.126.134", 9876);
 
     std::unique_ptr<Connector> connector(MakeConnector(&main_loop, remote_addr));
-    connector->set_on_new_connection([&main_loop](ScopedSocket&& sock, const SocketAddress& addr) {
+    connector->set_on_new_connection([](ScopedSocket&& sock, const SocketAddress& addr) {
         ENSURE(CHECK, kbase::NotReached()).Require();
     });
 

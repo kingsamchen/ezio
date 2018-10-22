@@ -23,7 +23,7 @@ ConnectorWin::ConnectorWin(EventLoop* loop, const SocketAddress& addr)
 
 ConnectorWin::~ConnectorWin()
 {
-    ENSURE(CHECK, connecting_ == false).Require();
+    ENSURE(CHECK, !connecting_).Require();
     ENSURE(CHECK, !socket_).Require();
 }
 
@@ -60,6 +60,7 @@ void ConnectorWin::Cancel()
     if (connecting_) {
         ENSURE(CHECK, !!retry_timer_).Require();
         loop_->CancelTimedTask(retry_timer_);
+        retry_timer_ = TimerID();
 
         // Still trying to complete.
         if (socket_) {
@@ -75,7 +76,7 @@ void ConnectorWin::Cancel()
 void ConnectorWin::TryCompleteConnect()
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
-    ENSURE(CHECK, connecting_ == true).Require();
+    ENSURE(CHECK, connecting_).Require();
 
     DWORD bytes = 0;
     DWORD flags = 0;

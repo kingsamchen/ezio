@@ -37,12 +37,7 @@ public:
     }
 
 protected:
-    ConnectorBase(EventLoop* loop, const SocketAddress& addr)
-        : loop_(loop),
-          remote_addr_(addr),
-          connecting_(false),
-          retry_delay_(kInitialRetryDelay)
-    {}
+    ConnectorBase(EventLoop* loop, const SocketAddress& addr);
 
     virtual void HandleNewConnection() = 0;
 

@@ -4,6 +4,8 @@ set(ezio_SRCS
     acceptor_posix.cpp
     buffer.cpp
     buffer_posix.cpp
+    connector_base.cpp
+    connector_posix.cpp
     event_loop.cpp
     event_pump.cpp
     event_pump_impl_posix.cpp

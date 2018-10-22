@@ -3,6 +3,7 @@ set(test_SRCS
     main.cpp
     acceptor_unittest.cpp
     buffer_unittest.cpp
+    connector_and_tcpclient.cpp
     endian_utils_unittest.cpp
     ignore_sigpipe_unittest.cpp
     io_service_context_unittest.cpp

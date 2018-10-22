@@ -10,6 +10,7 @@
 #include "kbase/basic_macros.h"
 
 #if defined(OS_POSIX)
+#include "ezio/connector_posix.h"
 #elif defined(OS_WIN)
 #include "ezio/connector_win.h"
 #endif
@@ -17,6 +18,7 @@
 namespace ezio {
 
 #if defined(OS_POSIX)
+using Connector = ConnectorPosix;
 #elif defined(OS_WIN)
 using Connector = ConnectorWin;
 #endif

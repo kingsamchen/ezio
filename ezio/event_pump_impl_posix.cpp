@@ -133,9 +133,10 @@ void EventPump::Impl::UpdateEpoll(int operation, const Notifier* notifier)
     ev.data.ptr = const_cast<Notifier*>(notifier);
 
     if (epoll_ctl(epfd_.get(), operation, notifier->socket(), &ev) < 0) {
+        auto err = errno;
         LOG(WARNING) << "epoll_ctl() failed for operation " << operation
-                     << " with fd" << notifier->socket();
-        ENSURE(THROW, operation == EPOLL_CTL_DEL)(operation)(errno).Require();
+                     << " with fd" << notifier->socket() << " due to " << err;
+        ENSURE(THROW, operation == EPOLL_CTL_DEL)(operation)(err).Require();
     }
 }
 

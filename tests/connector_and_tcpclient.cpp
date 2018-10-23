@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "kbase/at_exit_manager.h"
+#include "kbase/command_line.h"
 #include "kbase/error_exception_util.h"
 
 #include "ezio/event_loop.h"
@@ -58,6 +59,38 @@ TEST_CASE("Cancel a connecting request", "[Connector")
         connector->Cancel();
         main_loop.Quit();
     }, std::chrono::seconds(3));
+
+    main_loop.Run();
+}
+
+TEST_CASE("Reuse a connector", "[Connector]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    std::string ip;
+    REQUIRE(kbase::CommandLine::ForCurrentProcess().GetSwitchValueASCII(
+        CMDLINE_LITERAL("addr"), ip));
+
+    SocketAddress remote_addr(ip.c_str(), 9876);
+
+    auto connector(MakeConnector(&main_loop, remote_addr));
+    size_t used_count = 0;
+    connector->set_on_new_connection([&main_loop, &used_count, self = connector.get()](ScopedSocket&& sock, const SocketAddress& addr) {
+        ++used_count;
+        printf("connected; local address %s\n", addr.ToHostPort().c_str());
+        sock = nullptr;
+        if (used_count < 3) {
+            printf("waiting for re-connect\n");
+            main_loop.RunTaskAfter(std::bind(&Connector::Connect, self), std::chrono::seconds(3));
+        } else {
+            main_loop.Quit();
+        }
+    });
+
+    connector->Connect();
 
     main_loop.Run();
 }

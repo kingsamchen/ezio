@@ -198,6 +198,7 @@
     <ClCompile Include="ezio\acceptor.cpp" />
     <ClCompile Include="ezio\acceptor_win.cpp" />
     <ClCompile Include="ezio\buffer.cpp" />
+    <ClCompile Include="ezio\connector_base.cpp" />
     <ClCompile Include="ezio\connector_win.cpp" />
     <ClCompile Include="ezio\event_loop.cpp" />
     <ClCompile Include="ezio\event_pump.cpp" />

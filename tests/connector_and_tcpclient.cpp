@@ -15,6 +15,7 @@
 #include "ezio/event_loop.h"
 #include "ezio/io_service_context.h"
 #include "ezio/socket_address.h"
+#include "ezio/tcp_client.h"
 
 namespace ezio {
 
@@ -91,6 +92,132 @@ TEST_CASE("Reuse a connector", "[Connector]")
     });
 
     connector->Connect();
+
+    main_loop.Run();
+}
+
+TEST_CASE("Create a TCPClient instance and do nothing", "[TCPClient]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    TCPClient client(&main_loop, SocketAddress("127.0.0.1", 9876), "dummy");
+}
+
+TEST_CASE("TCPClient connects to a Echo server", "[TCPClient]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    TCPClient client(&main_loop, SocketAddress("192.168.126.134", 9876), "CannotConnect");
+
+    client.set_on_connection([](const TCPConnectionPtr& conn) {
+        if (conn->connected()) {
+            printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
+                    conn->local_addr().ToHostPort().c_str());
+            conn->SetTCPNoDelay(true);
+            conn->Send("Hello this is " + conn->name());
+        } else {
+            printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
+            EventLoop::current()->Quit();
+        }
+    });
+
+    client.set_on_message([](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {
+        if (buf.readable_size() > 0) {
+            auto msg = buf.ReadAllAsString() + "\n";
+            printf("-> %s", msg.c_str());
+            // Disconnect via TCPConnection, that's risky.
+            conn->Shutdown();
+        }
+    });
+
+    client.Connect();
+
+    main_loop.Run();
+}
+
+TEST_CASE("Cancel connecting for a TCPClient", "[TCPClient]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "CannotConnect");
+
+    client.set_on_connection([](const TCPConnectionPtr& conn) {
+        conn->Shutdown();
+        REQUIRE(kbase::NotReached());
+    });
+
+    printf("connecting to %s\n", client.remote_addr().ToHostPort().c_str());
+
+    client.Connect();
+
+    main_loop.RunTaskAfter([&client, &main_loop] {
+        printf("Cancel connecting\n");
+        client.Cancel();
+        main_loop.Quit();
+    }, std::chrono::seconds(5));
+
+    main_loop.Run();
+}
+
+TEST_CASE("Destruct a connecting TCPClient", "[TCPClient]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "CannotConnect");
+
+    client.set_on_connection([](const TCPConnectionPtr& conn) {
+        conn->Shutdown();
+        REQUIRE(kbase::NotReached());
+    });
+
+    printf("connecting to %s\n", client.remote_addr().ToHostPort().c_str());
+
+    client.Connect();
+
+    main_loop.RunTaskAfter([] {
+        EventLoop::current()->Quit();
+    }, std::chrono::seconds(5));
+
+    main_loop.Run();
+
+    printf("MainLoop is quiting\n");
+}
+
+TEST_CASE("Destruct a connected TCPClient", "[TCPClient]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop main_loop;
+
+    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "Destructor");
+
+    client.set_on_connection([](const TCPConnectionPtr& conn) {
+        if (conn->connected()) {
+            printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
+                   conn->local_addr().ToHostPort().c_str());
+            printf("Wait for destruction of TCPClient\n");
+            EventLoop::current()->Quit();
+        } else {
+            printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
+        }
+    });
+
+    client.set_on_message([](const TCPConnectionPtr&, Buffer&, TimePoint) {});
+
+    client.Connect();
 
     main_loop.Run();
 }

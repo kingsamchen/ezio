@@ -126,6 +126,7 @@ void ConnectorWin::HandleNewConnection()
     // Cleanup for future reuse.
     connecting_ = false;
     memset(&ov, 0, sizeof(ov));
+    retry_delay_ = kInitialRetryDelay;
     retry_timer_ = TimerID();
 
     sockaddr_in local_addr;
@@ -134,7 +135,18 @@ void ConnectorWin::HandleNewConnection()
     rv = getsockname(socket_.get(), reinterpret_cast<sockaddr*>(&local_addr), &addr_len);
     LOG_IF(ERROR, rv != 0) << "getsockname() failed; Error: " << WSAGetLastError();
 
+    std::shared_ptr<void> binder;
+
+    if (weakly_bound_) {
+        binder = bound_object_.lock();
+        if (!binder) {
+            return;
+        }
+    }
+
     on_new_connection_(std::move(socket_), SocketAddress(local_addr));
+
+    RETAIN_LIFETIME_TO_HERE(binder);
 }
 
 void ConnectorWin::HandleError(bool restart)

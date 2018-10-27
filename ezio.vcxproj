@@ -183,6 +183,7 @@
     <ClInclude Include="ezio\scoped_socket.h" />
     <ClInclude Include="ezio\socket_address.h" />
     <ClInclude Include="ezio\socket_utils.h" />
+    <ClInclude Include="ezio\tcp_client.h" />
     <ClInclude Include="ezio\tcp_connection.h" />
     <ClInclude Include="ezio\tcp_server.h" />
     <ClInclude Include="ezio\this_thread.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="ezio\socket_address.cpp" />
     <ClCompile Include="ezio\socket_utils.cpp" />
     <ClCompile Include="ezio\socket_utils_win.cpp" />
+    <ClCompile Include="ezio\tcp_client.cpp" />
     <ClCompile Include="ezio\tcp_connection.cpp" />
     <ClCompile Include="ezio\tcp_connection_win.cpp" />
     <ClCompile Include="ezio\tcp_server.cpp" />

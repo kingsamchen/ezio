@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <functional>
+#include <memory>
 
 #include "ezio/scoped_socket.h"
 #include "ezio/socket_address.h"
@@ -26,6 +27,8 @@ public:
     // It should be safe to call this function multiple times.
     virtual void Cancel() = 0;
 
+    void WeaklyBind(const std::shared_ptr<void>& obj);
+
     void set_on_new_connection(NewConnectionHandler handler)
     {
         on_new_connection_ = std::move(handler);
@@ -34,6 +37,11 @@ public:
     const SocketAddress& remote_addr() const noexcept
     {
         return remote_addr_;
+    }
+
+    bool connecting() const noexcept
+    {
+        return connecting_;
     }
 
 protected:
@@ -51,6 +59,9 @@ protected:
 
     SocketAddress remote_addr_;
     ScopedSocket socket_;
+
+    std::weak_ptr<void> bound_object_;
+    bool weakly_bound_;
 
     NewConnectionHandler on_new_connection_;
 

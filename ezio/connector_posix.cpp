@@ -102,6 +102,10 @@ void ConnectorPosix::WaitForConnectingComplete()
     sock_notifier_->set_on_write(std::bind(&ConnectorPosix::HandleNewConnection, this));
     sock_notifier_->set_on_error(std::bind(&ConnectorPosix::HandleError, this, true));
 
+    if (weakly_bound_) {
+        sock_notifier_->WeaklyBind(bound_object_.lock());
+    }
+
     sock_notifier_->EnableWriting();
 
     waiting_completion_ = true;
@@ -115,8 +119,10 @@ void ConnectorPosix::ResetNotifier()
     sock_notifier_->DisableAll();
     sock_notifier_->Detach();
 
-    // Retain to the next pump.
-    loop_->QueueTask([this] { sock_notifier_ = nullptr; });
+    // Release the notifier first, in case the next call of WaitForConnectingComplete()
+    // finds that the `sock_notifier_` is not empty.
+    // But the last notifier is retained until to the next pump.
+    loop_->QueueTask([notifier = std::shared_ptr<Notifier>(std::move(sock_notifier_))] {});
 }
 
 void ConnectorPosix::HandleNewConnection()
@@ -141,6 +147,7 @@ void ConnectorPosix::HandleNewConnection()
 
             waiting_completion_ = false;
             connecting_ = false;
+            retry_delay_ = kInitialRetryDelay;
             retry_timer_ = TimerID();
 
             sockaddr_in local_addr {};

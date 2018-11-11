@@ -46,11 +46,12 @@ void Notifier::DoHandleEvent(TimePoint receive_time, IOContext io_ctx) const
             LOG(WARNING) << "Async operation " << events << " on socket " << socket() << " failed;"
                          << " error: " << result.second;
             on_error_();
-            return;
         }
     }
 
     // An async-io operation can't be both read and write.
+    // However, `on_read_` and `on_write_` must be error-aware, that is, they must be able
+    // to handle async read/write errors.
     if (events & IOEvent::Read) {
         ENSURE(CHECK, WatchReading())(watching_events()).Require();
         on_read_(receive_time, details);

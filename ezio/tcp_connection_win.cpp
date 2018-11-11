@@ -7,6 +7,7 @@
 #include <WinSock2.h>
 
 #include "kbase/error_exception_util.h"
+#include "kbase/logging.h"
 
 #include "ezio/event_loop.h"
 
@@ -30,7 +31,12 @@ void TCPConnection::PostRead()
 
     int rv = WSARecv(conn_sock_.get(), &buf, 1, nullptr, &flags, &io_reqs_.read_req, nullptr);
     if (rv != 0 && WSAGetLastError() != WSA_IO_PENDING) {
+        LOG(ERROR) << "Cannot emit async-read via WSARecv(); error: " << WSAGetLastError();
         HandleError();
+
+        // If we failed to emit an async read request, we would never get the chance to
+        // wait HandleRead() to be called, and hence stuck in the loop.
+        ForceClose();
     }
 }
 
@@ -84,7 +90,12 @@ void TCPConnection::PostWrite()
 
     int rv = WSASend(conn_sock_.get(), &buf, 1, nullptr, flags, &io_reqs_.write_req, nullptr);
     if (rv != 0 && WSAGetLastError() != WSA_IO_PENDING) {
+        LOG(ERROR) << "Cannot emit async-write via WSASend(); error: " << WSAGetLastError();
         HandleError();
+
+        // Same as which in PostRead().
+        ForceClose();
+
         return;
     }
 

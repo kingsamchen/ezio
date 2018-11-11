@@ -119,6 +119,8 @@ private:
 
     void DoShutdown();
 
+    void ForceClose();
+
     void HandleRead(TimePoint timestamp, IOContext::Details details);
 
     void HandleWrite(IOContext::Details details);

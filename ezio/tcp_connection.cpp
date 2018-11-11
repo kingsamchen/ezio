@@ -121,8 +121,17 @@ void TCPConnection::DoShutdown()
     }
 }
 
+void TCPConnection::ForceClose()
+{
+    ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
+
+    HandleClose();
+}
+
 void TCPConnection::SetTCPNoDelay(bool enable)
 {
+    FORCE_AS_NON_CONST_FUNCTION();
+
     socket::SetTCPNoDelay(conn_sock_, enable);
 }
 

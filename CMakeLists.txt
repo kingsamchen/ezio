@@ -49,3 +49,9 @@ message(STATUS "BUILD_NO_UNITTEST = " ${BUILD_NO_UNITTEST})
 if (NOT BUILD_NO_UNITTEST)
     add_subdirectory(tests)
 endif()
+
+message(STATUS "BUILD_NO_EXAMPLES = " ${BUILD_NO_EXAMPLES})
+
+if (NOT BUILD_NO_EXAMPLES)
+    add_subdirectory(examples)
+endif()

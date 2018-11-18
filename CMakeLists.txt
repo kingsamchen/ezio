@@ -3,19 +3,19 @@ cmake_minimum_required(VERSION 3.5)
 project(ezio CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 set(CXX_FLAGS
- -g
- -Wall
- -Wextra
- -Werror
- -Wno-unused-parameter
- -Wold-style-cast
- -Woverloaded-virtual
- -Wpointer-arith
- -Wshadow
+    -g
+    -Wall
+    -Wextra
+    -Werror
+    -Wno-unused-parameter
+    -Wold-style-cast
+    -Woverloaded-virtual
+    -Wpointer-arith
+    -Wshadow
 )
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -44,8 +44,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 add_subdirectory(KBase/src)
 add_subdirectory(ezio)
 
-message(STATUS "BUILD_NO_UNITTEST = " ${CMAKE_BUILD_NO_UNITTEST})
+message(STATUS "BUILD_NO_UNITTEST = " ${BUILD_NO_UNITTEST})
 
-if (NOT CMAKE_BUILD_NO_UNITTEST)
+if (NOT BUILD_NO_UNITTEST)
     add_subdirectory(tests)
 endif()

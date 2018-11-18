@@ -21,6 +21,8 @@ def main():
     parser.add_argument('--build-type', dest='build_type', type=str, default='Debug')
     parser.add_argument('--build-test', dest='build_test',
                         type=lambda opt: bool(strtobool(opt)), default=True)
+    parser.add_argument('--build-examples', dest='build_examples',
+                        type=lambda opt: bool(strtobool(opt)), default=True)
     args = parser.parse_args()
 
     build_type = args.build_type.capitalize()
@@ -31,13 +33,12 @@ def main():
 
     os.chdir(out_dir)
 
-    no_build_unittest = not args.build_test
-
     run('cmake'
         ' -DCMAKE_BUILD_TYPE={}'
-        ' -DCMAKE_BUILD_NO_UNITTEST={}'
+        ' -DBUILD_NO_UNITTEST={}'
+        ' -DBUILD_NO_EXAMPLES={}'
         ' -G "Ninja" {}'
-        .format(build_type, no_build_unittest, CMAKE_ROOT))
+        .format(build_type, not args.build_test, not args.build_examples, CMAKE_ROOT))
 
     run('cmake'
         ' --build {}'

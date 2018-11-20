@@ -35,7 +35,7 @@ WorkerPool::~WorkerPool()
 EventLoop* WorkerPool::GetNextEventLoop()
 {
     ENSURE(CHECK, main_loop_->BelongsToCurrentThread()).Require();
-    ENSURE(CHECK, 0 <= next_loop_idx_ && next_loop_idx_ < loops_.size())(next_loop_idx_).Require();
+    ENSURE(CHECK, next_loop_idx_ < loops_.size())(next_loop_idx_).Require();
 
     auto loop = loops_[next_loop_idx_++];
 

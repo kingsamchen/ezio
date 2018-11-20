@@ -43,7 +43,7 @@ struct IOContext {
         ~Details() = default;
     };
 
-    explicit IOContext(IOEventType epoll_events) noexcept
+    constexpr explicit IOContext(IOEventType epoll_events) noexcept
         : events(epoll_events)
     {}
 

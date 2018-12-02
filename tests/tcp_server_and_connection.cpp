@@ -147,12 +147,12 @@ TEST_CASE("Large data transfer", "[TCPServer]")
     server.set_on_message([&message_len](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {
         if (message_len == 0 && buf.readable_size() >= sizeof(message_len)) {
             message_len = static_cast<size_t>(buf.ReadAsInt64());
-            printf("msg-len: %llu\n", message_len);
+            printf("msg-len: %zu\n", message_len);
         }
 
         if (buf.readable_size() >= message_len) {
             auto msg = buf.ReadAsString(message_len);
-            printf("full-message read %llu\n", msg.size());
+            printf("full-message read %zu\n", msg.size());
             auto pin = kbase::MD5String(msg);
             printf("hash: %s\n", pin.c_str());
             conn->Send(pin);

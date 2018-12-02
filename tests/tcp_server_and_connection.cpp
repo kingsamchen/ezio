@@ -5,6 +5,7 @@
 #include "catch2/catch.hpp"
 
 #include "kbase/at_exit_manager.h"
+#include "kbase/md5.h"
 
 #include "ezio/io_service_context.h"
 #include "ezio/event_loop.h"
@@ -126,6 +127,43 @@ TEST_CASE("Server with worker pool", "[TCPServer]")
 
     printf("%s is running at %s on %s\n", server.name().c_str(), server.ip_port().c_str(),
            this_thread::GetName());
+
+    loop.Run();
+}
+
+TEST_CASE("Large data transfer", "[TCPServer]")
+{
+    kbase::AtExitManager exit_manager;
+    IOServiceContext::Init();
+
+    EventLoop loop;
+
+    SocketAddress addr(9876);
+    TCPServer server(&loop, addr, "DataTransfer");
+
+    server.set_on_connection(&OnConnection);
+
+    size_t message_len = 0;
+    server.set_on_message([&message_len](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {
+        if (message_len == 0 && buf.readable_size() >= sizeof(message_len)) {
+            message_len = static_cast<size_t>(buf.ReadAsInt64());
+            printf("msg-len: %llu\n", message_len);
+        }
+
+        if (buf.readable_size() >= message_len) {
+            auto msg = buf.ReadAsString(message_len);
+            printf("full-message read %llu\n", msg.size());
+            auto pin = kbase::MD5String(msg);
+            printf("hash: %s\n", pin.c_str());
+            conn->Send(pin);
+            // Clear.
+            message_len = 0;
+        }
+    });
+
+    server.Start();
+
+    printf("DataTransfer server is about ro serve at %s\n", server.ip_port().c_str());
 
     loop.Run();
 }

@@ -23,6 +23,11 @@ void TCPConnection::PostRead()
 
     // Provide buffer to receive data if we are not probing.
     if (!io_reqs_.read_req.IsProbing()) {
+        // Input buf is ran out, expand at disposal, or we can't read in anything.
+        if (input_buf_.writable_size() == 0) {
+            input_buf_.ReserveWritable(input_buf_.readable_size() / 2);
+        }
+
         buf.buf = input_buf_.BeginWrite();
         buf.len = static_cast<ULONG>(input_buf_.writable_size());
     }

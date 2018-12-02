@@ -195,7 +195,6 @@ public:
 
     void EndWrite(size_t written_size);
 
-private:
     void ReserveWritable(size_t new_size);
 
 private:

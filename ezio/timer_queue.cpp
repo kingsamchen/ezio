@@ -7,13 +7,14 @@
 #include <functional>
 
 #include "kbase/error_exception_util.h"
-#include "kbase/logging.h"
 #include "kbase/scope_guard.h"
 
 #include "ezio/event_loop.h"
 
 #if defined(OS_POSIX)
 #include <sys/timerfd.h>
+
+#include "kbase/logging.h"
 #endif
 
 namespace {
@@ -115,8 +116,6 @@ void TimerQueue::AddTimerInLoop(Timer* new_timer)
     if (new_earliest) {
 #if defined(OS_POSIX)
         ResetTimerFD(timer_fd_.get(), new_timer->expiration());
-#elif defined(OS_WIN)
-        loop_->Wakeup();
 #endif
     }
 }

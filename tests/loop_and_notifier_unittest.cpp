@@ -82,6 +82,23 @@ TEST_CASE("EventLoop and Notifier are two fundamental building blocks", "[MainLo
         loop.Run();
     }
 
+    SECTION("runs a timed task from other thread")
+    {
+        EventLoop loop;
+
+        std::thread th([&loop] {
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            loop.RunTaskAfter([] {
+                printf("Timed task designated from other thread\n");
+                EventLoop::current()->Quit();
+            }, std::chrono::seconds(2));
+        });
+
+        loop.Run();
+
+        th.join();
+    }
+
     SECTION("timed tasks are ordered by their expiration")
     {
         EventLoop loop;

@@ -101,6 +101,8 @@ void TCPClient::HandleConnection(ScopedSocket&& sock, const SocketAddress& local
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
 
+    state_.store(State::Connected, std::memory_order_release);
+
     const auto& peer_addr = connector_->remote_addr();
     auto conn_name = kbase::StringFormat("{0}-{1}#{2}", name_, peer_addr.ToHostPort(),
                                          next_conn_id_);

@@ -17,12 +17,6 @@
 #include <WinSock2.h>
 #endif
 
-#if defined(COMPILER_MSVC)
-#define NOT_NULL __notnull
-#else
-#define NOT_NULL
-#endif
-
 namespace ezio {
 
 class SocketAddress {
@@ -31,7 +25,7 @@ public:
 
     explicit SocketAddress(unsigned short port);
 
-    SocketAddress(NOT_NULL const char* ip, unsigned short port);
+    SocketAddress(const std::string& ip, unsigned short port);
 
     DEFAULT_COPY(SocketAddress);
 

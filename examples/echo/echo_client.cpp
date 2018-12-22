@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
             // Hack: convert wide-string on Windows.
             std::string ip(params[0].begin(), params[0].end());
             endpoint = std::make_unique<ezio::SocketAddress>(
-                ip.c_str(), static_cast<unsigned short>(std::stoul(params[1])));
+                ip, static_cast<unsigned short>(std::stoul(params[1])));
         } catch (const std::exception&) {
             handler.eptr = std::current_exception();
         }

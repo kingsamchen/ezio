@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
     ezio::IOServiceContext::Init();
 
-    ezio::SocketAddress addr(std::string(args[0].begin(), args[0].end()).c_str(),
+    ezio::SocketAddress addr(std::string(args[0].begin(), args[0].end()),
                              static_cast<unsigned short>(std::stoul(args[1])));
 
     ChatClient client(addr);

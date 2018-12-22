@@ -31,15 +31,13 @@ SocketAddress::SocketAddress(unsigned short port)
     addr_.sin_addr.s_addr = INADDR_ANY;
 }
 
-SocketAddress::SocketAddress(NOT_NULL const char* ip, unsigned short port)
+SocketAddress::SocketAddress(const std::string& ip, unsigned short port)
 {
-    ENSURE(CHECK, ip != nullptr).Require();
-
     memset(&addr_, 0, sizeof(addr_));
 
     addr_.sin_family = AF_INET;
     addr_.sin_port = HostToNetwork(port);
-    int rv = inet_pton(AF_INET, ip, &addr_.sin_addr);
+    int rv = inet_pton(AF_INET, ip.c_str(), &addr_.sin_addr);
     ENSURE(THROW, rv > 0)(socket::GetLastErrorCode())(ip)(port).Require();
 }
 

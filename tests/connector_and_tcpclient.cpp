@@ -75,7 +75,7 @@ TEST_CASE("Reuse a connector", "[Connector]")
     REQUIRE(kbase::CommandLine::ForCurrentProcess().GetSwitchValueASCII(
         CMDLINE_LITERAL("addr"), ip));
 
-    SocketAddress remote_addr(ip.c_str(), 9876);
+    SocketAddress remote_addr(ip, 9876);
 
     auto connector(MakeConnector(&main_loop, remote_addr));
     size_t used_count = 0;

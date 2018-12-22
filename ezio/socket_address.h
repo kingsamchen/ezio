@@ -41,10 +41,14 @@ public:
         return addr_;
     }
 
-    std::string ToHostPort() const;
+    const std::string& ToHostPort() const noexcept
+    {
+        return host_port_;
+    }
 
 private:
     sockaddr_in addr_;
+    std::string host_port_;
 };
 
 }   // namespace ezio

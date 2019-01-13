@@ -8,7 +8,6 @@ import shlex
 import shutil
 import subprocess
 
-from distutils.util import strtobool
 from os import path
 
 PROJECT_ROOT = path.dirname(path.abspath(__file__))

@@ -87,9 +87,9 @@ public:
         return peer_addr_;
     }
 
-    void set_on_connection(ConnectionEventHandler handler)
+    void set_on_connect(ConnectionEventHandler handler)
     {
-        on_connection_ = std::move(handler);
+        on_connect_ = std::move(handler);
     }
 
     void set_on_message(MessageEventHandler handler)
@@ -97,9 +97,19 @@ public:
         on_message_ = std::move(handler);
     }
 
+    void set_on_disconnect(ConnectionEventHandler handler)
+    {
+        on_disconnect_ = std::move(handler);
+    }
+
     void set_on_close(CloseEventHandler handler)
     {
         on_close_ = std::move(handler);
+    }
+
+    void set_on_destroy(DestroyEventHandler handler)
+    {
+        on_destroy_ = std::move(handler);
     }
 
 private:
@@ -165,9 +175,11 @@ private:
     IORequests io_reqs_;
 #endif
 
-    ConnectionEventHandler on_connection_;
+    ConnectionEventHandler on_connect_;
     MessageEventHandler on_message_;
+    ConnectionEventHandler on_disconnect_;
     CloseEventHandler on_close_;
+    DestroyEventHandler on_destroy_;
 };
 
 using TCPConnectionPtr = std::shared_ptr<TCPConnection>;

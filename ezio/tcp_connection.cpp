@@ -79,7 +79,7 @@ void TCPConnection::MakeEstablished()
     conn_notifier_.WeaklyBind(shared_from_this());
     conn_notifier_.EnableReading();
 
-    on_connection_(shared_from_this());
+    on_connect_(shared_from_this());
 
 #if defined(OS_WIN)
     ENSURE(CHECK, io_reqs_.read_req.IsProbing())(io_reqs_.read_req.events).Require();
@@ -94,9 +94,12 @@ void TCPConnection::MakeTeardown()
     auto running_state = State::Connected;
     if (state_.compare_exchange_strong(running_state, State::Disconnected,
                                        std::memory_order_acq_rel, std::memory_order_relaxed)) {
+        on_disconnect_(shared_from_this());
+
         conn_notifier_.DisableAll();
-        on_connection_(shared_from_this());
     }
+
+    on_destroy_(shared_from_this());
 
     conn_notifier_.Detach();
 }
@@ -147,7 +150,7 @@ void TCPConnection::HandleClose()
 
     TCPConnectionPtr conn(shared_from_this());
 
-    on_connection_(conn);
+    on_disconnect_(conn);
     on_close_(conn);
 }
 

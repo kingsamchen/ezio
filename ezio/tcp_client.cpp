@@ -11,6 +11,13 @@
 
 #include "ezio/event_loop.h"
 
+namespace {
+
+void OnConnectionDestroyDefault(const ezio::TCPConnectionPtr&)
+{}
+
+}   // namespace
+
 namespace ezio {
 
 using namespace std::placeholders;
@@ -22,6 +29,7 @@ TCPClient::TCPClient(EventLoop* loop, const SocketAddress& remote_addr, std::str
       next_conn_id_(0),
       auto_reconnect_(false),
       connector_(MakeConnector(loop, remote_addr)),
+      on_connection_destroy_(&OnConnectionDestroyDefault),
       alive_token_(std::make_shared<AliveToken>())
 {
     connector_->set_on_new_connection(std::bind(&TCPClient::HandleConnection, this, _1, _2));
@@ -114,9 +122,12 @@ void TCPClient::HandleConnection(ScopedSocket&& sock, const SocketAddress& local
                                                 local_addr,
                                                 peer_addr);
 
-    conn->set_on_connection(on_connection_);
-    conn->set_on_message(on_message_);
+    conn->set_on_connect(on_connect_);
+    conn->set_on_disconnect(on_disconnect_);
     conn->set_on_close(std::bind(&TCPClient::HandleDisconnection, this, _1));
+    conn->set_on_destroy(on_connection_destroy_);
+
+    conn->set_on_message(on_message_);
 
     {
         std::lock_guard<std::mutex> lock(conn_mutex_);

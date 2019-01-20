@@ -14,7 +14,11 @@ ChatClient::ChatClient(const ezio::SocketAddress& sockaddr)
     : thread_("client-network"),
       client_(thread_.event_loop(), sockaddr, "ChatClient")
 {
-    client_.set_on_connection(std::bind(&ChatClient::OnConnection, this, _1));
+    client_.set_on_connect(std::bind(&ChatClient::OnConnection, this, _1));
+    client_.set_on_disconnect(std::bind(&ChatClient::OnConnection, this, _1));
+    client_.set_on_connection_destroy([this](const auto&) {
+        main_loop_.Quit();
+    });
     client_.set_on_message(std::bind(&DataCodec::OnDataReceive, &codec_, _1, _2, _3));
 
     codec_.set_on_message(std::bind(&ChatClient::OnMessage, this, _1, _2, _3));
@@ -57,10 +61,6 @@ void ChatClient::OnConnection(const ezio::TCPConnectionPtr& conn)
     } else {
         conn_ = nullptr;
         printf("Bye!\n");
-        // HACK: ensure calling dtor of `client_` after handling disconnection.
-        // TODO: Use a more proper way to eliminate this hack.
-        main_loop_.RunTaskAfter(std::bind(&ezio::EventLoop::Quit, &main_loop_),
-                                std::chrono::seconds(2));
     }
 }
 

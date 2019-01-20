@@ -22,7 +22,8 @@ public:
     explicit EchoClient(const ezio::SocketAddress& addr)
         : tcp_client_(&io_loop_, addr, "EchoClient")
     {
-        tcp_client_.set_on_connection(std::bind(&EchoClient::OnConnection, this, _1));
+        tcp_client_.set_on_connect(std::bind(&EchoClient::OnConnection, this, _1));
+        tcp_client_.set_on_disconnect(std::bind(&EchoClient::OnConnection, this, _1));
         tcp_client_.set_on_message(std::bind(&EchoClient::OnReceiveMessage, this, _1, _2, _3));
     }
 
@@ -39,12 +40,15 @@ public:
     }
 
 private:
-    void ReadUserInput() const
+    void ReadUserInput()
     {
         ENSURE(CHECK, !!conn_).Require();
 
         std::string s;
-        std::getline(std::cin, s, '\n');
+        if (!std::getline(std::cin, s, '\n')) {
+            tcp_client_.Disconnect();
+            return;
+        }
 
         conn_->Send(s);
     }
@@ -58,13 +62,13 @@ private:
             conn_ = conn;
             ReadUserInput();
         } else {
-            LOG(INFO) << "Server is down due to unknown causes";
+            LOG(INFO) << "Disconnect from the server";
             conn_ = nullptr;
             io_loop_.Quit();
         }
     }
 
-    void OnReceiveMessage(const ezio::TCPConnectionPtr&, ezio::Buffer& buf, ezio::TimePoint) const
+    void OnReceiveMessage(const ezio::TCPConnectionPtr&, ezio::Buffer& buf, ezio::TimePoint)
     {
         std::cout << buf.ReadAllAsString() << "\n";
         ReadUserInput();

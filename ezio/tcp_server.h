@@ -60,9 +60,19 @@ public:
         return listen_addr_.ToHostPort();
     }
 
-    void set_on_connection(ConnectionEventHandler handler)
+    void set_on_connect(ConnectionEventHandler handler)
     {
-        on_connection_ = std::move(handler);
+        on_connect_ = std::move(handler);
+    }
+
+    void set_on_disconnect(ConnectionEventHandler handler)
+    {
+        on_disconnect_ = std::move(handler);
+    }
+
+    void set_on_connection_destroy(DestroyEventHandler handler)
+    {
+        on_connection_destroy_ = std::move(handler);
     }
 
     void set_on_message(MessageEventHandler handler)
@@ -92,7 +102,10 @@ private:
 
     ConnectionMap connections_;
 
-    ConnectionEventHandler on_connection_;
+    ConnectionEventHandler on_connect_;
+    ConnectionEventHandler on_disconnect_;
+    DestroyEventHandler on_connection_destroy_;
+
     MessageEventHandler on_message_;
 };
 

@@ -11,6 +11,13 @@
 
 #include "ezio/event_loop.h"
 
+namespace {
+
+void OnConnectionDestroyDefault(const ezio::TCPConnectionPtr&)
+{}
+
+}   // namespace
+
 namespace ezio {
 
 using namespace std::placeholders;
@@ -21,7 +28,8 @@ TCPServer::TCPServer(ezio::EventLoop* loop, const SocketAddress& addr, std::stri
       name_(std::move(name)),
       started_(false),
       acceptor_(loop, addr),
-      next_conn_id_(0)
+      next_conn_id_(0),
+      on_connection_destroy_(&OnConnectionDestroyDefault)
 {
     acceptor_.set_on_new_connection(std::bind(&TCPServer::HandleNewConnection, this, _1, _2));
 }
@@ -77,11 +85,14 @@ void TCPServer::HandleNewConnection(ScopedSocket&& conn_sock, const SocketAddres
 
     connections_.insert({conn->name(), conn});
 
-    conn->set_on_connection(on_connection_);
-    conn->set_on_message(on_message_);
+    conn->set_on_connect(on_connect_);
+    conn->set_on_disconnect(on_disconnect_);
     conn->set_on_close([this](const TCPConnectionPtr& conn_ptr) {
         loop_->RunTask(std::bind(&TCPServer::RemoveConnection, this, conn_ptr));
     });
+    conn->set_on_destroy(on_connection_destroy_);
+
+    conn->set_on_message(on_message_);
 
     conn_loop->RunTask(std::bind(&TCPConnection::MakeEstablished, conn));
 }

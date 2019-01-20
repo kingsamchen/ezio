@@ -10,6 +10,7 @@
 #include "ezio/io_service_context.h"
 #include "ezio/event_loop.h"
 #include "ezio/tcp_server.h"
+#include <cinttypes>
 
 namespace {
 
@@ -36,7 +37,8 @@ TEST_CASE("Accept and read", "[TCPServer]")
 
     TCPServer server(&loop, addr, "Discarder");
 
-    server.set_on_connection(&OnConnection);
+    server.set_on_connect(&OnConnection);
+    server.set_on_disconnect(&OnConnection);
     server.set_on_message([](const TCPConnectionPtr& conn, Buffer& buf, TimePoint ts) {
         // Assume no message decoding needed
         auto msg = buf.ReadAllAsString();
@@ -45,7 +47,8 @@ TEST_CASE("Accept and read", "[TCPServer]")
             EventLoop::current()->Quit();
         }
 
-        printf("msg from %s: %s\n", conn->peer_addr().ToHostPort().c_str(), msg.c_str());
+        printf("%" PRId64 " msg from %s: %s\n", ts.time_since_epoch().count(),
+               conn->peer_addr().ToHostPort().c_str(), msg.c_str());
     });
 
     server.Start();
@@ -64,7 +67,8 @@ TEST_CASE("Echo", "[TCPServer]")
     SocketAddress addr(9876);
     TCPServer server(&loop, addr, "Echo");
 
-    server.set_on_connection(&OnConnection);
+    server.set_on_connect(&OnConnection);
+    server.set_on_disconnect(&OnConnection);
     server.set_on_message([](const TCPConnectionPtr& conn, Buffer& buf, TimePoint ts) {
         auto msg = buf.ReadAllAsString();
         if (msg.find("[quit]") != std::string::npos) {
@@ -78,7 +82,7 @@ TEST_CASE("Echo", "[TCPServer]")
             return;
         }
 
-        printf("[%s]: %s\n", conn->name().c_str(), msg.c_str());
+        printf("%" PRId64 " [%s]: %s\n" , ts.time_since_epoch().count(), conn->name().c_str(), msg.c_str());
         conn->Send(msg);
     });
 
@@ -98,13 +102,17 @@ TEST_CASE("Server with worker pool", "[TCPServer]")
     SocketAddress addr(9876);
     TCPServer server(&loop, addr, "MT-Echo");
 
-    server.set_on_connection([](const TCPConnectionPtr& conn) {
+    auto connection_handler = [](const TCPConnectionPtr& conn) {
         const char* state = conn->connected() ? "connected" : "disconnected";
         printf("Connection %s is %s on%s\n", conn->peer_addr().ToHostPort().c_str(), state,
                this_thread::GetName());
-    });
+    };
 
-    server.set_on_message([main_loop = &loop](const TCPConnectionPtr& conn, Buffer& buf, TimePoint ts) {
+    server.set_on_connect(connection_handler);
+    server.set_on_disconnect(connection_handler);
+
+    server.set_on_message([main_loop = &loop](const TCPConnectionPtr& conn, Buffer& buf,
+                                              TimePoint) {
         auto msg = buf.ReadAllAsString();
         if (msg.find("[quit]") != std::string::npos) {
             conn->Shutdown();
@@ -141,7 +149,7 @@ TEST_CASE("Large data transfer", "[TCPServer]")
     SocketAddress addr(9876);
     TCPServer server(&loop, addr, "DataTransfer");
 
-    server.set_on_connection(&OnConnection);
+    server.set_on_connect(&OnConnection);
 
     size_t message_len = 0;
     server.set_on_message([&message_len](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {

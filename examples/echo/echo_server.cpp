@@ -25,7 +25,8 @@ public:
           connections_(0),
           received_messages_(0)
     {
-        tcp_srv_.set_on_connection(std::bind(&EchoServer::OnConnection, this, _1));
+        tcp_srv_.set_on_connect(std::bind(&EchoServer::OnConnection, this, _1));
+        tcp_srv_.set_on_disconnect(std::bind(&EchoServer::OnConnection, this, _1));
         tcp_srv_.set_on_message(std::bind(&EchoServer::OnMessage, this, _1, _2, _3));
         io_loop_.RunTaskEvery(std::bind(&EchoServer::DumpServerStatus, this),
                              std::chrono::seconds(5));
@@ -59,14 +60,13 @@ private:
         if (conn->connected()) {
             action = "connected";
             connections_.fetch_add(1);
+            conn->SetTCPNoDelay(true);
         } else {
             action = "disconnected";
             connections_.fetch_sub(1);
         }
 
         LOG(INFO) << conn->name() << " at " << conn->peer_addr().ToHostPort() << " is " << action;
-
-        conn->SetTCPNoDelay(true);
     }
 
     void OnMessage(const ezio::TCPConnectionPtr& conn, ezio::Buffer& buf, ezio::TimePoint)

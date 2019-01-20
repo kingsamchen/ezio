@@ -17,7 +17,8 @@ using namespace std::placeholders;
 ChatServer::ChatServer(unsigned short port)
     : srv_(&loop_, ezio::SocketAddress(port), "ChatServer")
 {
-    srv_.set_on_connection(std::bind(&ChatServer::OnConnection, this, _1));
+    srv_.set_on_connect(std::bind(&ChatServer::OnConnection, this, _1));
+    srv_.set_on_disconnect(std::bind(&ChatServer::OnConnection, this, _1));
     srv_.set_on_message(std::bind(&DataCodec::OnDataReceive, &codec_, _1, _2, _3));
 
     codec_.set_on_command(std::bind(&ChatServer::OnCommand, this, _1, _2, _3));

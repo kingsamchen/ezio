@@ -18,8 +18,9 @@ class TCPConnection;
 using TCPConnectionPtr = std::shared_ptr<TCPConnection>;
 
 using ConnectionEventHandler = std::function<void(const TCPConnectionPtr&)>;
-using MessageEventHandler = std::function<void(const TCPConnectionPtr&, Buffer&, TimePoint)>;
 using CloseEventHandler = std::function<void(const TCPConnectionPtr&)>;
+using DestroyEventHandler = std::function<void(const TCPConnectionPtr&)>;
+using MessageEventHandler = std::function<void(const TCPConnectionPtr&, Buffer&, TimePoint)>;
 
 }   // namespace ezio
 

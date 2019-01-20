@@ -50,7 +50,7 @@ TEST_CASE("Cancel a connecting request", "[Connector")
     SocketAddress remote_addr("192.168.126.134", 9876);
 
     std::unique_ptr<Connector> connector(MakeConnector(&main_loop, remote_addr));
-    connector->set_on_new_connection([](ScopedSocket&& sock, const SocketAddress& addr) {
+    connector->set_on_new_connection([](ScopedSocket&&, const SocketAddress&) {
         ENSURE(CHECK, kbase::NotReached()).Require();
     });
 
@@ -113,18 +113,18 @@ TEST_CASE("TCPClient connects to a Echo server", "[TCPClient]")
 
     EventLoop main_loop;
 
-    TCPClient client(&main_loop, SocketAddress("192.168.126.134", 9876), "CannotConnect");
+    TCPClient client(&main_loop, SocketAddress("127.0.0.1", 9876), "CannotConnect");
 
-    client.set_on_connection([](const TCPConnectionPtr& conn) {
-        if (conn->connected()) {
-            printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
-                    conn->local_addr().ToHostPort().c_str());
-            conn->SetTCPNoDelay(true);
-            conn->Send("Hello this is " + conn->name());
-        } else {
-            printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
-            EventLoop::current()->Quit();
-        }
+    client.set_on_connect([](const TCPConnectionPtr& conn) {
+        printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
+               conn->local_addr().ToHostPort().c_str());
+        conn->SetTCPNoDelay(true);
+        conn->Send("Hello this is " + conn->name());
+    });
+
+    client.set_on_disconnect([](const TCPConnectionPtr& conn) {
+        printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
+        EventLoop::current()->Quit();
     });
 
     client.set_on_message([](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {
@@ -148,10 +148,9 @@ TEST_CASE("Cancel connecting for a TCPClient", "[TCPClient]")
 
     EventLoop main_loop;
 
-    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "CannotConnect");
+    TCPClient client(&main_loop, SocketAddress("127.0.0.1", 9876), "CannotConnect");
 
-    client.set_on_connection([](const TCPConnectionPtr& conn) {
-        conn->Shutdown();
+    client.set_on_connect([](const TCPConnectionPtr&) {
         REQUIRE(kbase::NotReached());
     });
 
@@ -175,10 +174,13 @@ TEST_CASE("Destruct a connecting TCPClient", "[TCPClient]")
 
     EventLoop main_loop;
 
-    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "CannotConnect");
+    TCPClient client(&main_loop, SocketAddress("127.0.0.1", 9876), "CannotConnect");
 
-    client.set_on_connection([](const TCPConnectionPtr& conn) {
-        conn->Shutdown();
+    client.set_on_connect([](const TCPConnectionPtr&) {
+        REQUIRE(kbase::NotReached());
+    });
+
+    client.set_on_connection_destroy([](const TCPConnectionPtr&) {
         REQUIRE(kbase::NotReached());
     });
 
@@ -202,17 +204,22 @@ TEST_CASE("Destruct a connected TCPClient", "[TCPClient]")
 
     EventLoop main_loop;
 
-    TCPClient client(&main_loop, SocketAddress("192.168.234.1", 9876), "Destructor");
+    TCPClient client(&main_loop, SocketAddress("127.0.0.1", 9876), "Destructor");
 
-    client.set_on_connection([](const TCPConnectionPtr& conn) {
-        if (conn->connected()) {
-            printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
-                   conn->local_addr().ToHostPort().c_str());
-            printf("Wait for destruction of TCPClient\n");
-            EventLoop::current()->Quit();
-        } else {
-            printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
-        }
+    client.set_on_connect([](const TCPConnectionPtr& conn) {
+        printf("Connected to %s; local addr %s\n", conn->peer_addr().ToHostPort().c_str(),
+               conn->local_addr().ToHostPort().c_str());
+        printf("Wait for destruction of TCPClient\n");
+        EventLoop::current()->Quit();
+    });
+
+    client.set_on_disconnect([](const TCPConnectionPtr& conn) {
+        printf("Disconnected from %s\n", conn->peer_addr().ToHostPort().c_str());
+    });
+
+    client.set_on_connection_destroy([&main_loop](const TCPConnectionPtr& conn) {
+        printf("%s is about to be destroyed\n", conn->peer_addr().ToHostPort().c_str());
+        main_loop.Quit();
     });
 
     client.set_on_message([](const TCPConnectionPtr&, Buffer&, TimePoint) {});

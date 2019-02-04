@@ -69,7 +69,7 @@ TEST_CASE("Iteratos", "[Buffer]")
     std::string s("hello world");
     buf.Write(s.data(), s.length());
     REQUIRE_FALSE(buf.begin() == buf.end());
-    REQUIRE(std::distance(buf.begin(), buf.end()) == buf.readable_size());
+    REQUIRE(static_cast<size_t>(std::distance(buf.begin(), buf.end())) == buf.readable_size());
 
     auto space_it = std::find(buf.begin(), buf.end(), ' ');
     REQUIRE(space_it != buf.end());
@@ -112,7 +112,7 @@ TEST_CASE("Consuming buffer", "[Buffer]")
 TEST_CASE("WritesAndPeeks", "[Buffer]")
 {
     Buffer buf;
-    buf.Write(int8_t(0xFF));
+    buf.Write(uint8_t(0xFF));
     buf.Write(int16_t(-123));
     buf.Write(int32_t(0xDEADBEEF));
     buf.Write(int64_t(-1));

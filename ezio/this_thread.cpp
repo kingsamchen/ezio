@@ -42,12 +42,14 @@ struct seh_tradition {};
 
 const DWORD kVCThreadNameException = 0x406D1388;
 
+#pragma pack(push, 8)
 typedef struct tagTHREADNAME_INFO {
     DWORD dwType;  // Must be 0x1000.
     LPCSTR szName;  // Pointer to name (in user addr space).
     DWORD dwThreadID;  // Thread ID (-1=caller thread).
     DWORD dwFlags;  // Reserved for future use, must be zero.
 } THREADNAME_INFO;
+#pragma pack(pop)
 
 bool SetThreadNameInternal(const char* name, win10_description)
 {
@@ -75,11 +77,14 @@ void SetThreadNameInternal(const char* name, seh_tradition)
     info.dwThreadID = static_cast<DWORD>(-1);
     info.dwFlags = 0;
 
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
     __try {
         RaiseException(kVCThreadNameException, 0, sizeof(info) / sizeof(ULONG_PTR),
                        reinterpret_cast<ULONG_PTR*>(&info));
     } __except(EXCEPTION_EXECUTE_HANDLER) {
     }
+#pragma warning(pop)
 }
 
 void SetNativeThreadName(const char* name)

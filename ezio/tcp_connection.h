@@ -54,6 +54,9 @@ public:
     // This function is thread-safe.
     void Shutdown();
 
+    // This function is thread-safe.
+    void ForceClose();
+
     void SetTCPNoDelay(bool enable);
 
     // Must be called on connection's loop thread.
@@ -129,7 +132,7 @@ private:
 
     void DoShutdown();
 
-    void ForceClose();
+    void DoForceClose();
 
     void HandleRead(TimePoint timestamp, IOContext::Details details);
 

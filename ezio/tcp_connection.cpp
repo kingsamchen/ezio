@@ -41,7 +41,7 @@ TCPConnection::~TCPConnection()
 {
     bool expected = state() == State::Disconnected;
     DLOG_IF(ERROR, !expected) << "TCPConnection is in " << kbase::enum_cast(state())
-                              << "while destructing";
+                              << " while destructing";
     ENSURE(CHECK, expected)(state()).Require();
 }
 
@@ -125,6 +125,19 @@ void TCPConnection::DoShutdown()
 }
 
 void TCPConnection::ForceClose()
+{
+    auto running_state = State::Connected;
+    if (state_.compare_exchange_strong(running_state,
+                                       State::Disconnecting,
+                                       std::memory_order_acq_rel,
+                                       std::memory_order_relaxed) ||
+        state() == State::Disconnecting)
+    {
+        loop_->RunTask(std::bind(&TCPConnection::DoForceClose, this));
+    }
+}
+
+void TCPConnection::DoForceClose()
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
 

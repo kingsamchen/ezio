@@ -32,7 +32,7 @@ TCPClient::TCPClient(EventLoop* loop, const SocketAddress& remote_addr, std::str
       on_connection_destroy_(&OnConnectionDestroyDefault),
       alive_token_(std::make_shared<AliveToken>())
 {
-    connector_->set_on_new_connection(std::bind(&TCPClient::HandleConnection, this, _1, _2));
+    connector_->set_on_new_connection(std::bind(&TCPClient::HandleNewConnection, this, _1, _2));
     connector_->WeaklyBind(alive_token_);
 }
 
@@ -41,9 +41,11 @@ TCPClient::~TCPClient()
     alive_token_ = nullptr;
 
     TCPConnectionPtr conn;
+    bool unique = false;
 
     {
         std::lock_guard<std::mutex> lock(conn_mutex_);
+        unique = conn_.unique();
         conn = std::move(conn_);
     }
 
@@ -56,8 +58,18 @@ TCPClient::~TCPClient()
         return;
     }
 
-    // Active connection exists.
-    loop_->RunTask(std::bind(&TCPConnection::MakeTeardown, conn));
+    // As long as the connection is alive, there is a chance that the Disconnect() has been
+    // called but the connection-close event hasn't been delivered.
+    // Therefore, we should detach the connection from the control of the TCPClient instance.
+
+    loop_->RunTask(std::bind(&TCPConnection::set_on_close, conn,
+                             [loop = loop_, _ = conn](const TCPConnectionPtr& c) {
+        loop->QueueTask(std::bind(&TCPConnection::MakeTeardown, c));
+    }));
+
+    if (unique && (state_.load(std::memory_order_acquire) == State::Connected)) {
+        conn->ForceClose();
+    }
 }
 
 void TCPClient::Connect()
@@ -105,7 +117,7 @@ void TCPClient::Cancel()
     }
 }
 
-void TCPClient::HandleConnection(ScopedSocket&& sock, const SocketAddress& local_addr)
+void TCPClient::HandleNewConnection(ScopedSocket&& sock, const SocketAddress& local_addr)
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
 
@@ -124,7 +136,7 @@ void TCPClient::HandleConnection(ScopedSocket&& sock, const SocketAddress& local
 
     conn->set_on_connect(on_connect_);
     conn->set_on_disconnect(on_disconnect_);
-    conn->set_on_close(std::bind(&TCPClient::HandleDisconnection, this, _1));
+    conn->set_on_close(std::bind(&TCPClient::HandleCloseConnection, this, _1));
     conn->set_on_destroy(on_connection_destroy_);
 
     conn->set_on_message(on_message_);
@@ -137,17 +149,17 @@ void TCPClient::HandleConnection(ScopedSocket&& sock, const SocketAddress& local
     conn_->MakeEstablished();
 }
 
-void TCPClient::HandleDisconnection(const TCPConnectionPtr& conn)
+void TCPClient::HandleCloseConnection(const TCPConnectionPtr& conn)
 {
     ENSURE(CHECK, loop_->BelongsToCurrentThread()).Require();
     ENSURE(CHECK, loop_ == conn->event_loop()).Require();
+
+    state_.store(State::Disconnected, std::memory_order_release);
 
     {
         std::lock_guard<std::mutex> lock(conn_mutex_);
         conn_ = nullptr;
     }
-
-    state_.store(State::Disconnected, std::memory_order_release);
 
     loop_->QueueTask(std::bind(&TCPConnection::MakeTeardown, conn));
 

@@ -96,9 +96,9 @@ public:
     }
 
 private:
-    void HandleConnection(ScopedSocket&& sock, const SocketAddress& local_addr);
+    void HandleNewConnection(ScopedSocket&& sock, const SocketAddress& local_addr);
 
-    void HandleDisconnection(const TCPConnectionPtr& conn);
+    void HandleCloseConnection(const TCPConnectionPtr& conn);
 
 private:
     EventLoop* loop_;

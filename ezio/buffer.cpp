@@ -4,12 +4,6 @@
 
 #include "ezio/buffer.h"
 
-#include <cstring>
-
-#include "kbase/error_exception_util.h"
-
-#include "ezio/endian_utils.h"
-
 namespace ezio {
 
 Buffer::Buffer()
@@ -31,60 +25,6 @@ void Buffer::Write(const void* data, size_t size)
     EndWrite(size);
 }
 
-void Buffer::Write(int8_t n)
-{
-    Write(&n, sizeof(n));
-}
-
-void Buffer::Write(int16_t n)
-{
-    auto be = HostToNetwork(n);
-    Write(&be, sizeof(be));
-}
-
-void Buffer::Write(int32_t n)
-{
-    auto be = HostToNetwork(n);
-    Write(&be, sizeof(be));
-}
-
-void Buffer::Write(int64_t n)
-{
-    auto be = HostToNetwork(n);
-    Write(&be, sizeof(be));
-}
-
-int8_t Buffer::PeekAsInt8() const
-{
-    ENSURE(CHECK, readable_size() >= sizeof(int8_t))(readable_size()).Require();
-    int8_t n = *Peek();
-    return n;
-}
-
-int16_t Buffer::PeekAsInt16() const
-{
-    ENSURE(CHECK, readable_size() >= sizeof(int16_t))(readable_size()).Require();
-    int16_t be;
-    memcpy(&be, Peek(), sizeof(be));
-    return NetworkToHost(be);
-}
-
-int32_t Buffer::PeekAsInt32() const
-{
-    ENSURE(CHECK, readable_size() >= sizeof(int32_t))(readable_size()).Require();
-    int32_t be;
-    memcpy(&be, Peek(), sizeof(be));
-    return NetworkToHost(be);
-}
-
-int64_t Buffer::PeekAsInt64() const
-{
-    ENSURE(CHECK, readable_size() >= sizeof(int64_t))(readable_size()).Require();
-    int64_t be;
-    memcpy(&be, Peek(), sizeof(be));
-    return NetworkToHost(be);
-}
-
 void Buffer::Consume(size_t data_size)
 {
     ENSURE(CHECK, data_size <= readable_size())(data_size)(readable_size()).Require();
@@ -93,34 +33,6 @@ void Buffer::Consume(size_t data_size)
     } else {
         ConsumeAll();
     }
-}
-
-int8_t Buffer::ReadAsInt8()
-{
-    auto n = PeekAsInt8();
-    Consume(sizeof(n));
-    return n;
-}
-
-int16_t Buffer::ReadAsInt16()
-{
-    auto n = PeekAsInt16();
-    Consume(sizeof(n));
-    return n;
-}
-
-int32_t Buffer::ReadAsInt32()
-{
-    auto n = PeekAsInt32();
-    Consume(sizeof(n));
-    return n;
-}
-
-int64_t Buffer::ReadAsInt64()
-{
-    auto n = PeekAsInt64();
-    Consume(sizeof(n));
-    return n;
 }
 
 std::string Buffer::ReadAsString(size_t length)
@@ -145,6 +57,12 @@ void Buffer::Prepend(const void* data, size_t size)
     auto start = reader_index_ - size;
     memcpy(buf_.data() + start, data, size);
     reader_index_ -= size;
+}
+
+void Buffer::Prepend(int16_t n)
+{
+    auto be = HostToNetwork(n);
+    Prepend(&be, sizeof(be));
 }
 
 void Buffer::Prepend(int32_t n)

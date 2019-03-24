@@ -15,7 +15,7 @@ void DataCodec::OnDataReceive(const ezio::TCPConnectionPtr& conn, ezio::Buffer& 
                               ezio::TimePoint ts) const
 {
     while (buf.readable_size() >= (sizeof(DataType) + kDataLenTypeSize)) {
-        auto data_type = static_cast<DataType>(buf.PeekAsInt8());
+        auto data_type = static_cast<DataType>(buf.PeekAs<int8_t>());
         if (!(DataType::TypeBegin < data_type && data_type < DataType::TypeEnd)) {
             LOG(ERROR) << "Invalid data type: " << data_type;
             conn->Shutdown();

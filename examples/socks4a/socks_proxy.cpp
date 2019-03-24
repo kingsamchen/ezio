@@ -101,10 +101,10 @@ std::pair<bool, RequestPacket> DecodeRequestPacket(ezio::Buffer& buf)
 
     RequestPacket packet;
 
-    packet.ver = buf.ReadAsInt8();
-    packet.command = buf.ReadAsInt8();
-    packet.dest_port = static_cast<uint16_t>(buf.ReadAsInt16());
-    packet.dest_ip = static_cast<uint32_t>(buf.ReadAsInt32());
+    packet.ver = buf.ReadAs<int8_t>();
+    packet.command = buf.ReadAs<int8_t>();
+    packet.dest_port = buf.ReadAs<uint16_t>();
+    packet.dest_ip = buf.ReadAs<uint32_t>();
 
     if (socks4a) {
         packet.domain.assign(std::next(userid_delim), domain_delim);

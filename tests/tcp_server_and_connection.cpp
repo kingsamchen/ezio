@@ -154,7 +154,7 @@ TEST_CASE("Large data transfer", "[TCPServer]")
     size_t message_len = 0;
     server.set_on_message([&message_len](const TCPConnectionPtr& conn, Buffer& buf, TimePoint) {
         if (message_len == 0 && buf.readable_size() >= sizeof(message_len)) {
-            message_len = static_cast<size_t>(buf.ReadAsInt64());
+            message_len = buf.ReadAs<size_t>();
             printf("msg-len: %zu\n", message_len);
         }
 

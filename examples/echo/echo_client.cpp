@@ -125,8 +125,11 @@ int main(int argc, char* argv[])
             auto params = cmdline.GetParameters();
             ENSURE(THROW, params.size() >= 2)(params.size()).Require("at least ip and port");
 
-            // Hack: convert wide-string on Windows.
-            std::string ip(kbase::WideToASCII(params[0]));
+#if defined(OS_WIN)
+            auto ip = kbase::WideToASCII(params[0]);
+#else
+            auto ip = params[0];
+#endif
             endpoint = std::make_unique<ezio::SocketAddress>(
                 ip, static_cast<unsigned short>(std::stoul(params[1])));
         } catch (const std::exception&) {

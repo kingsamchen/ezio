@@ -33,7 +33,13 @@ int main(int argc, char* argv[])
 
     ezio::IOServiceContext::Init();
 
-    ezio::SocketAddress addr(kbase::WideToASCII(args[0]), static_cast<unsigned short>(std::stoul(args[1])));
+#if defined(OS_WIN)
+    auto ip = kbase::WideToASCII(args[0]);
+#else
+    auto ip = args[0];
+#endif
+
+    ezio::SocketAddress addr(ip, static_cast<unsigned short>(std::stoul(args[1])));
 
     ChatClient client(addr);
 

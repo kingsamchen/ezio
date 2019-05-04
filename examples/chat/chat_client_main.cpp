@@ -7,6 +7,7 @@
 #include "kbase/at_exit_manager.h"
 #include "kbase/command_line.h"
 #include "kbase/logging.h"
+#include "kbase/string_encoding_conversions.h"
 
 #include "ezio/io_service_context.h"
 #include "ezio/socket_address.h"
@@ -32,8 +33,7 @@ int main(int argc, char* argv[])
 
     ezio::IOServiceContext::Init();
 
-    ezio::SocketAddress addr(std::string(args[0].begin(), args[0].end()),
-                             static_cast<unsigned short>(std::stoul(args[1])));
+    ezio::SocketAddress addr(kbase::WideToASCII(args[0]), static_cast<unsigned short>(std::stoul(args[1])));
 
     ChatClient client(addr);
 

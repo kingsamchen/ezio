@@ -15,47 +15,40 @@ ezio currently supports TCP socket only.
 
 ## Build Instructions
 
-### Windows
+### Platform Requirements
 
-**Requirements**
+#### Windows
 
 - Windows 7, or later
-- Visual Studio 2015, or later (should be C++ 14 compliant)
+- Visual Studio 2015, or later (C++ 14 is required)
+- CMake 3.11 or later
+- Python 3
 
-**Build Steps**
+Note:
 
-1. Clone the repo with its submodules.
-2. Open the `ezio.sln` and build the project `ezio`, the final static library is under the folder `ezio/build/<Configuration>`.
-3. Build the `test` project to run test suits as your wish.
+- If python 3 was not installed, you should run cmake configuration and build targets manually.
+- We will use the latest version of Visual Studio as possible and use x64 as the default target architecture.
 
-Please be noted:
-- only x64 version is officially supported
-- all projects are originally built with `/MD(d)` flag
+#### Ubuntu
 
-### Linux
-
-**Requirements**
-
-- Linux kernel 2.6.28 minimum
-- Clang 3.8, or G++ 5.4 as the minimum (should be C++ 14 compliant)
-- CMake 3.5, or later
-- Python 3.5, or later
+- 14.04 LTS x64, or later
+- Clang 3.8, or G++ as the minimum (C++ 14 is required)
+- CMake 3.11, or later
+- Python 3
 - Ninja (optional)
 
-Notes:
-- Ubuntu is always fully tested, but I haven't done compilations or tests for other distributions
-- If you do favor using makefile as your build system, you can specify that when running `gen.py`
+Note:
 
-**Build Steps**
+- If python 3 was not installed, you should run cmake configuration and build targets manually.
+- If Ninja was not installed, you can use the traditional Makefile
 
-1. Clone the repo with its submodules.
-2. Run `gen.py` to build the lib and tests.
-   Use `--build-type={Debug|Release}` to specify build mode explicitly; *Debug* is the default mode.
-3. To skip building tests and examples, use `--no-test` and `--no-examples`, respectively
+### Generate & Build
 
-Other detailed options can be found by specifying `--help`.
+KBase uses [anvil](https://github.com/kingsamchen/anvil) to assist in generating build system files and running builds.
 
-Building the project would not install any of its files into your system's include directory.
+Please be noted that, building the project on Linux platforms would not install any of its files into your system's include directory.
+
+Run `anvil --help` to check command flags in details.
 
 ## Acknowledgements
 

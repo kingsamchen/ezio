@@ -10,6 +10,7 @@
 #include "kbase/command_line.h"
 #include "kbase/error_exception_util.h"
 #include "kbase/logging.h"
+#include "kbase/string_encoding_conversions.h"
 
 #include "ezio/event_loop.h"
 #include "ezio/io_service_context.h"
@@ -125,7 +126,7 @@ int main(int argc, char* argv[])
             ENSURE(THROW, params.size() >= 2)(params.size()).Require("at least ip and port");
 
             // Hack: convert wide-string on Windows.
-            std::string ip(params[0].begin(), params[0].end());
+            std::string ip(kbase::WideToASCII(params[0]));
             endpoint = std::make_unique<ezio::SocketAddress>(
                 ip, static_cast<unsigned short>(std::stoul(params[1])));
         } catch (const std::exception&) {

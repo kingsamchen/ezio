@@ -1,5 +1,9 @@
 
-include(${EZIO_DEPS_DIR}/FetchKBase.cmake)
+declare_dep_module(KBase
+  VERSION         0.1.4
+  GIT_REPOSITORY  https://github.com/kingsamchen/KBase.git
+  GIT_TAG         v0.1.4
+)
 
 set(ezio_SRCS
   acceptor.cpp
@@ -93,8 +97,11 @@ add_library(ezio ${ezio_FILES})
 
 apply_common_compile_properties_to_target(ezio)
 
-if(MSVC)
-  enable_msvc_static_analysis_for_target(ezio)
+if(MSVC AND EZIO_ENABLE_CODE_ANALYSIS)
+  enable_msvc_static_analysis_for_target(ezio
+    WDL
+      /wd6387
+  )
 endif()
 
 target_include_directories(ezio
